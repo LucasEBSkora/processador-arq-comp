@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all; 
 
-entity ULA_tb is
+entity tb_ULA is
 end;
 
-architecture a_ULA_tb of ULA_tb is
+architecture a_tb_ULA of tb_ULA is
 	component ULA
 		port ( entr0, entr1 : in unsigned(15 downto 0);
 			sel_op : in unsigned(2 downto 0);
@@ -81,4 +81,4 @@ architecture a_ULA_tb of ULA_tb is
 
 			wait;
 		end process;
-end architecture;
+end architecture a_tb_ULA;
