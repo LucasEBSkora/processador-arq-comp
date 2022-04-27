@@ -75,7 +75,7 @@ architecture a_tb_proc of tb_proc is
       
       selRegWrite <= "001";
       entradaExterna <= "0000000000000001";
-      wait for clk_period;
+      wait for clk_period*3;
 
       selRegWrite <= "010";
       entradaExterna <= "0000000000000010";
@@ -111,7 +111,6 @@ architecture a_tb_proc of tb_proc is
       wait for clk_period;
       
       -- r5 = r7 ^ r3
-      sel_entr1_ULA <= '0';
       wr_en <= '1';
       selRegWrite <= "101";
       selRegA <= "111";
@@ -121,7 +120,7 @@ architecture a_tb_proc of tb_proc is
 
       wr_en <= '0';
       selRegA <= "101";
-      selRegB <= "101";
+      selRegB <= "000";
       
       wait;
     end process;

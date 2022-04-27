@@ -26,6 +26,7 @@ architecture a_bancoReg of bancoReg is
     );
   end component reg16bits;
   
+  signal selRegA_internal, selRegB_internal : unsigned(2 downto 0);
   signal wr_en_1, wr_en_2, wr_en_3, wr_en_4, wr_en_5, wr_en_6, wr_en_7 : std_logic;
   signal data_out_1, data_out_2, data_out_3, data_out_4, data_out_5, data_out_6, data_out_7: unsigned(15 downto 0);
 
@@ -46,7 +47,15 @@ begin
   wr_en_6 <= wr_en when selRegWrite = "110" else '0';
   wr_en_7 <= wr_en when selRegWrite = "111" else '0';
 
-  regA <= 
+    process(clk) -- sinais de reset e write enable são passados diretamente aos registradores
+    begin
+        if rising_edge(clk) then
+          selRegA_internal <= selRegA;
+          selRegB_internal <= selRegB;
+        end if;
+    end process;
+
+  regA <=
     data_out_1 when selRegA = "001" else 
     data_out_2 when selRegA = "010" else 
     data_out_3 when selRegA = "011" else 
