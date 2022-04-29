@@ -19,4 +19,6 @@ begin
         elsif rising_edge(clk) then
             estado <= not estado;
         end if;
-    end architecture;
+    end process;
+   
+end architecture;
