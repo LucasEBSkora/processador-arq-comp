@@ -11,14 +11,14 @@ entity maquinaEstados is
 end entity maquinaEstados;
 
 architecture a_maquinaEstados of maquinaEstados is
+    signal estado : std_logic;
 begin
-    process(clk, reset)
-    begin
+    process(clk,rst)
         if reset = '1' then
             estado <= 0;
         elsif rising_edge(clk) then
             estado <= not estado;
         end if;
     end process;
-   
+
 end architecture;
