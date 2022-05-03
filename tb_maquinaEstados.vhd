@@ -8,20 +8,21 @@ end entity tb_maquinaEstados;
 architecture a_tb_maquinaEstados of tb_maquinaEstados is
     component maquinaEstados
     port(
-        clk : in std_logic;
-        reset: in std_logic;
-        estado_out : out std_logic
+        clk    : in std_logic;
+        reset  : in std_logic;
+        estado : out std_logic
     );
 end component;
 
-constant clk_period                          : time      := 100 ns;
-signal finished                      : std_logic := '0';
-signal clk : std_logic ;
-signal reset : std_logic ;
-signal estado_out : std_logic;
+constant clk_period : time      := 100 ns;
+signal finished     : std_logic := '0';
+signal clk          : std_logic;
+signal reset        : std_logic;
+signal estado       : std_logic;
 
 begin
-    uut: maquinaEstados port map(clk => clk, reset => reset);
+    uut: maquinaEstados port map(clk => clk, reset => reset, estado => estado);
+
     total_sim_time: process
     begin
         wait for 10 us;
@@ -59,7 +60,6 @@ begin
         wait for clk_period;
 
         wait for clk_period;
-
 
         wait;
     end process;
