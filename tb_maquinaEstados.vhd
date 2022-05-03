@@ -48,20 +48,5 @@ begin
         end loop;
         wait;
     end process clk_process;
-    
-    testbench: process
-    begin
-        wait for clk_period;
-
-        wait for clk_period;
-        
-        wait for clk_period;
-
-        wait for clk_period;
-
-        wait for clk_period;
-
-        wait;
-    end process;
 
 end architecture a_tb_MaquinaEstados;
