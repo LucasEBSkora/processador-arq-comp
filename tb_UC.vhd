@@ -8,10 +8,10 @@ end entity tb_UC;
 architecture a_tb_UC of tb_UC is
   component UC
     port (
-      clk    : in std_logic;
-      reset  : in std_logic;
-      instrucao : in unsigned(14 downto 0);
-      PC     : out unsigned(15 downto 0) 
+      clk       : in  std_logic;
+      reset     : in  std_logic;
+      instrucao : in  unsigned(14 downto 0);
+      PC        : out unsigned(15 downto 0)
     );
   end component UC;
   

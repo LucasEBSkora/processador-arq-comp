@@ -4,11 +4,11 @@ use ieee.numeric_std.all;
 
 entity ULA is
 	port ( 
-				entr0, entr1 : in unsigned(15 downto 0);
-				sel_op : in unsigned(2 downto 0);
-				saida : out unsigned(15 downto 0);
-				op_zero, entr0_maior, entr0_menor : out std_logic
-			);
+		entr0, entr1 											: in  unsigned(15 downto 0);
+		sel_op 			 											: in  unsigned(2 downto 0);
+		saida 			 											: out unsigned(15 downto 0);
+		op_zero, entr0_maior, entr0_menor : out std_logic
+	);
 end entity;
 
 architecture a_ULA of ULA is

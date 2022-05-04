@@ -3,8 +3,9 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity rom is
-    port( clk    : in std_logic;
-        endereco : in unsigned(6 downto 0);
+    port( 
+        clk      : in  std_logic;
+        endereco : in  unsigned(6 downto 0);
         dado     : out unsigned(14 downto 0)
     );
 end entity;

@@ -7,20 +7,22 @@ end;
 
 architecture a_tb_ULA of tb_ULA is
 	component ULA
-		port ( entr0, entr1 : in unsigned(15 downto 0);
-			sel_op : in unsigned(2 downto 0);
-			saida : out unsigned(15 downto 0);
+		port ( 
+			entr0, entr1 											: in  unsigned(15 downto 0);
+			sel_op 			 											: in  unsigned(2 downto 0);
+			saida 			 											: out unsigned(15 downto 0);
 			op_zero, entr0_maior, entr0_menor : out std_logic
 		);
 	end component;
 	
-	signal entr0, entr1 : unsigned(15 downto 0);
-	signal sel_op : unsigned(2 downto 0);
-	signal saida : unsigned(15 downto 0);
+	signal entr0, entr1 										 : unsigned(15 downto 0);
+	signal sel_op 													 : unsigned(2 downto 0);
+	signal saida 														 : unsigned(15 downto 0);
 	signal op_zero, entr0_maior, entr0_menor : std_logic;
 
 	begin
-		uut: ULA port map(entr0 => entr0, entr1 => entr1, sel_op => sel_op, saida => saida, op_zero => op_zero, entr0_maior => entr0_maior, entr0_menor => entr0_menor);
+		uut: ULA port map(entr0 => entr0, entr1 => entr1, sel_op => sel_op,
+										  saida => saida, op_zero => op_zero, entr0_maior => entr0_maior, entr0_menor => entr0_menor);
 		process
 		begin
 			sel_op <= "000";

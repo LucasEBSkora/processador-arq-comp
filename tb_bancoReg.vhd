@@ -7,16 +7,16 @@ end entity tb_bancoReg;
 
 architecture a_tb_bancoReg of tb_bancoReg is
   component bancoReg
-    port(    
-      clk : in std_logic;
-      rst : in std_logic;
-      wr_en : in std_logic;
-      selRegWrite: in unsigned(2 downto 0);
-      selRegA: in unsigned(2 downto 0);
-      selRegB: in unsigned(2 downto 0);
-      writeData : in unsigned(15 downto 0);
-      regA : out unsigned(15 downto 0);
-      regB : out unsigned(15 downto 0)
+    port (
+      clk         : in  std_logic;
+      rst         : in  std_logic;
+      wr_en       : in  std_logic;
+      selRegWrite : in  unsigned(2 downto 0);
+      selRegA     : in  unsigned(2 downto 0);
+      selRegB     : in  unsigned(2 downto 0);
+      writeData   : in  unsigned(15 downto 0);
+      regA        : out unsigned(15 downto 0);
+      regB        : out unsigned(15 downto 0)
     );
   end component;
 

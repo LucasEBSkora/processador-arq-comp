@@ -13,11 +13,12 @@ end entity UC;
 
 architecture a_UC of UC is
   component reg16bits 
-    port( clk : in std_logic;
-        rst : in std_logic;
-        wr_en : in std_logic;
-        data_in : in unsigned(15 downto 0);
-        data_out : out unsigned(15 downto 0)
+    port(
+      clk      : in  std_logic;
+      rst      : in  std_logic;
+      wr_en    : in  std_logic;
+      data_in  : in  unsigned(15 downto 0);
+      data_out : out unsigned(15 downto 0)
     );
   end component reg16bits;
 
@@ -37,7 +38,6 @@ architecture a_UC of UC is
   
   signal wr_en_pc   : std_logic;
   signal jump_en    : std_logic; 
-  
   
   constant opcode_nop  : unsigned(3 downto 0) := "0000";
   constant opcode_jump : unsigned(3 downto 0) := "1111";
