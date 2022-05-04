@@ -10,17 +10,18 @@ architecture a_tb_UC of tb_UC is
     port (
       clk    : in std_logic;
       reset  : in std_logic;
+      instrucao : in unsigned(14 downto 0);
       PC     : out unsigned(15 downto 0) 
     );
   end component UC;
   
-  constant clk_period      : time      := 100 ns;
-  signal finished          : std_logic := '0';
-  signal clk, rst : std_logic;
-  signal PC : unsigned(15 downto 0);
-
+  constant clk_period : time      := 100 ns;
+  signal   finished   : std_logic := '0';
+  signal   clk, rst   : std_logic;
+  signal   PC         : unsigned(15 downto 0);
+  signal   instrucao  : unsigned(14 downto 0);
 begin
-  uut: UC port map(clk => clk, reset => rst, PC => PC);
+  uut: UC port map(clk => clk, reset => rst, instrucao => instrucao, PC => PC);
 
   total_sim_time: process
   begin
@@ -48,5 +49,20 @@ begin
       wait;
   end process clk_process;
 
+  testbench: process
+  begin
+    -- deixa o PC simplesmente contar
+    instrucao <= "000000000000000";
+
+    wait for clk_period*22;
+
+    -- manda um jump
+    instrucao <= "111101100100001";
+    wait for clk_period*2;
+
+    instrucao <= "000000000000000";
+
+    wait;
+  end process testbench;
 
 end architecture a_tb_UC;
