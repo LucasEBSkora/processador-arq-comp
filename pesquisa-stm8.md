@@ -14,7 +14,7 @@ Os registradores são:
 * CC: Registrador de Código de Condição de 8 bits, um registrador que armazena flags sobre o resultado da última instrução e o estado do processador, que podem ser acessadas e testadas sepradamente. As flags são:
     * V: Overflow: overflow ocorreu na última operação aritmética com sinal;
     * I1: Interrupt mask Level 1 - ver abaixo;
-    * H: Half Carry bit - Carry entre os bits 3 e 4 da ULA durante adições de 8 bits **ver se ADD e ADC são 8 bits**, e entre os bits 7 e 8 para adições e subtrações de 16 bits **VER SE ADDW e SUBW são de 16 bits** (usado para rotinas com BCD)
+    * H: Half Carry bit - Carry entre os bits 3 e 4 da ULA durante adições de 8 bits (usado para rotinas com BCD), e entre os bits 7 e 8 para adições e subtrações de 16 bits 
     * I0: Interrupt mask Level 0 - ver abaixo;
     * N: Negative: Indica se o resultado da última operação aritmética, lógica ou de manipulação de dados foi negativa (MSB em `1`);
     * Z: Zero: Indica se o resultado da última operação aritmética, lógica ou de manipulação de dados foi 0;
