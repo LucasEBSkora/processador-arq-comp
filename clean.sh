@@ -1,3 +1,3 @@
 shopt -s extglob
-rm !(*.vhd|.gitignore|LICENSE|clean.sh|README.md)
+rm !(*.vhd|.gitignore|LICENSE|*.sh|*.md)
 shopt -u extglob
