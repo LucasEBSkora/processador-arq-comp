@@ -38,12 +38,12 @@ Muito semelhante a soma, é feita através da instrução: `SUB A, src`. O valor
 ## Desvio incondicional
 É feito através da instrução de Jump `JP dst`. Este jump basicamente substitui o valor de PC atual pelo valor do dst, que é um endereço no mesmo local de memória. O controle então passa para a instrução endereçado pelo PC. Quando cruza uma seção da memória, é necessário utilizar a instrulão Jump Section `JPF dst`, utilizado para quando o destino é um endereço estendido.
 # Desvio condicional
-Feito através da instrução Conditional Jump `JRxx dst`. Nessa instrução, xx representa o tipo de condição a ser apresentada, se a condição é verdadeira, o PC é atualizado pela adição entre ele e o dst. Se não, o programa continua normalmente. Alguns exemplos que as condições podem ser:
-* EQ -> vai dar um branch se for igual
-* MI -> se for negativo (Minus)
-* NC -> se não for um Carry
-* NE -> se não for igual (Not equal)
-* PL -> se for um positivo (Plus).
+Feito através da instrução Conditional Jump `JRxx dst`. Nessa instrução, xx representa o tipo de condição a ser usada. Se a condição é verdadeira, o PC é atualizado pela adição entre ele e o dst; Se não, o programa continua normalmente. As condições são, em geral, relacionadas  última operação:
+* EQ -> vai dar um branch se os operandos na última operação eram iguais
+* MI -> se o resultado era negativo (Minus)
+* NC -> se a operação não produziu Carry
+* NE -> se os operandos não eram iguais (Not equal)
+* PL -> se o resultado era positivo (Plus).
 
 # Instruções de acesso à memória (modo de endereçamento indireto)
 Os 18 (sim, no início do manual ele fala 20, mas na seção dedicada diz 18) modos de endereçamento, incluindo endereçamento indireto relativo e indexado, permitem rotinas com branches sofisticados ou funções com estilo switch-case, e é otimizado para implementar programas escritos em C eficientemente.
