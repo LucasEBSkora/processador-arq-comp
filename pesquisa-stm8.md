@@ -28,12 +28,17 @@ Além disso, há o CFG_GCR (Global Configuration Register), que é usado para ap
 # Instruções originais do processador a implementar para operações de:
 As instruções são "Orientadas à 8 bits" com comprimento médio de 2 bytes.
 ## Carga de constante;
+A carga de constante é feita através da instrução de Load:  `LD dst, src`, em que dst é o destino e o src é a fonte, ambos podendo ser um byte de memória ou um registrador.
 ## Cópia de valor entre registradores;
+É feita através da instrução de Move: `MOV dst, src`, em que a fonte (source) é o registrador com o valor a ser copiado, e o destino é o registrador para onde será copiado, as informações da fonte não são alteradas no processo.
 ## Soma de dois valores;
+A soma de dois valores é feita através da istrução de um ADD: `ADD A, src`, em que A seria o registrador acumulador e o src seria a fonte a ser somada a ele. Vale lembrar que também existe a operação ADC (*Addition Carry*) através da sintaxe `ADC A, src`, onde pode ser feitas operações com mais de 8 bits (com Carry). É feito da mesma forma que o anterior porém tem um bit para a flag do Carry.
 ## Subtração de dois valores;
+Muito semelhante a soma, é feita através da instrução: `SUB A, src`. O valor armazenado no acumulador A é subtraído pelo byte source, e o resultado é guardado no próprio A.
 ## Desvio incondicional
-
+É feito através da instrução de Jump `JP dst`. Este jump basicamente substitui o valor de PC atual pelo valor do dst, que é um endereço no mesmo local de memória. O controle então passa para a instrução endereçado pelo PC. Quando cruza uma seção da memória, é necessário utilizar a instrulão Jump Section `JPF dst`, utilizado para quando o destino é um endereço estendido.
 # Desvio condicional
+Feito através da instrução Conditional Jump `JRxx dst`. Nessa instrução, se a condição é verdadeira o PC é atualizado pela adição entre ele e o dst. Se não, o programa continua normalmente.
 
 # Instruções de acesso à memória (modo de endereçamento indireto)
 Os 18 (sim, no início do manual ele fala 20, mas na seção dedicada diz 18) modos de endereçamento, incluindo endereçamento indireto relativo e indexado, permitem rotinas com branches sofisticados ou funções com estilo switch-case, e é otimizado para implementar programas escritos em C eficientemente.
@@ -46,7 +51,7 @@ O manual agrupa esses modos de endereçamento em 8 grupos principais: Inerente, 
 
 * Para o endereçamento direto (acesso à um espaço de memória, com o endereço fornecido), as instruções tem 1 byte para a instrução e de 1 a 3 bytes para o endereço usado (embora nem toda instrução suporte usar os 3 tamanhos de endereço) - Equivalente à `A = *10`
 
-* O modo indexado acessa o endereço no registrador X, Y ou SP (modo indexado pelo Stack Pointer) somando (se desejado) um offset de 1 a 3 bytes (embora nem toda instrução suporte usar os 3 registradores ou tamanhos de offset) - Equicalente à `A = *(X + 10)`
+* O modo indexado acessa o endereço no registrador X, Y ou SP (modo indexado pelo Stack Pointer) somando (se desejado) um offset de 1 a 3 bytes (embora nem toda instrução suporte usar os 3 registradores ou tamanhos de offset) - Equivalente à `A = *(X + 10)`
 
 * O modo indireto acessa o endereço de memória indicado em outro endereço de memória. O endereço do ponteiro pode ter 1 ou dois bytes, e o ponteiro em si indica um endereço de 2 bytes - Equivalente à `A = *(X)`
 
