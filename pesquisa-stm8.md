@@ -4,7 +4,7 @@ Pesquisa sobre a estrutura de um processador da família STM8 baseado no manual 
 Tais processadores são projetados para ser baratos e eficientes, contando com 6 registradores internos acessáveis, 20 modos de endereçamento e 80 instruções.
 
 # Estrutura e nome dos registradores
-Os 6 registradores internos acessáveis incluem 2 registradores de 16 bits para ìndices, um Stack Pointer de 24 bits, e um registrador de flags de 8 bits. Os registradores de 16 bits permitem operações de endereçamento com ou sem offset e operações de leitura-modificação-escrita na memória. O registrador de flags fornece 7 flags diferentes sobre o resultado da última operação executada.
+Os 6 registradores internos acessáveis incluem 2 registradores de 16 bits para índices, um Stack Pointer de 24 bits, e um registrador de flags de 8 bits. Os registradores de 16 bits permitem operações de endereçamento com ou sem offset e operações de leitura-modificação-escrita na memória. O registrador de flags fornece 7 flags diferentes sobre o resultado da última operação executada.
 
 Os registradores são:
 * A: acumulador de 8 bits, guarda operandos e o resultado de operações lógicas e aritméticas, além de manipulação de dados em geral;
