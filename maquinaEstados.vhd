@@ -6,19 +6,23 @@ entity maquinaEstados is
     port(
         clk    : in std_logic;
         reset  : in std_logic;
-        estado : out std_logic
+        estado : out unsigned (1 downto 0)
     );
 end entity maquinaEstados;
 
 architecture a_maquinaEstados of maquinaEstados is
-    signal estado_interno : std_logic;
+    signal estado_interno : unsigned(1 downto 0);
 begin
     process(clk,reset)
     begin
         if reset = '1' then
-            estado_interno <= '0';
+            estado_interno <= '00';
         elsif rising_edge(clk) then
-            estado_interno <= not estado_interno;
+            if estado_interno <= "11" then
+                estado_interno <= "00";
+            else
+                estado_interno <= estado_interno+1;
+            endif;
         end if;
     end process;
     
