@@ -26,14 +26,14 @@ architecture a_UC of UC is
     port(
         clk    : in std_logic;
         reset  : in std_logic;
-        estado : out std_logic
+        estado : out unsigned(1 downto 0)
     );
   end component maquinaEstados;
 
   signal PC_entrada: unsigned(15 downto 0);
   signal PC_interno : unsigned(15 downto 0);
   
-  signal estado  : std_logic;
+  signal estado  : unsigned(1 downto 0);
   signal opcode  : unsigned(3 downto 0);
   
   signal wr_en_pc   : std_logic;
