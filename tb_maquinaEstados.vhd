@@ -10,7 +10,7 @@ architecture a_tb_maquinaEstados of tb_maquinaEstados is
     port(
         clk    : in std_logic;
         reset  : in std_logic;
-        estado : out std_logic
+        estado : out unsigned(1 downto 0)
     );
 end component;
 
@@ -18,7 +18,7 @@ constant clk_period : time      := 100 ns;
 signal finished     : std_logic := '0';
 signal clk          : std_logic;
 signal reset        : std_logic;
-signal estado       : std_logic;
+signal estado       : unsigned(1 downto 0);
 
 begin
     uut: maquinaEstados port map(clk => clk, reset => reset, estado => estado);
