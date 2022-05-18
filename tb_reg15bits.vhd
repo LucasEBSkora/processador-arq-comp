@@ -2,27 +2,27 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity tb_reg16bits is
-end entity tb_reg16bits;
+entity tb_reg15bits is
+end entity tb_reg15bits;
 
-architecture a_tb_reg16bits of tb_reg16bits is
-  component reg16bits
+architecture a_tb_reg15bits of tb_reg15bits is
+  component reg15bits
     port(
       clk      : in  std_logic;
       rst      : in  std_logic;
       wr_en    : in  std_logic;
-      data_in  : in  unsigned(15 downto 0);
-      data_out : out unsigned(15 downto 0)
+      data_in  : in  unsigned(14 downto 0);
+      data_out : out unsigned(14 downto 0)
     );
   end component;
 
   constant clk_period      : time      := 100 ns;
   signal finished          : std_logic := '0';
   signal clk, rst, wr_en   : std_logic;
-  signal data_in, data_out : unsigned(15 downto 0);
+  signal data_in, data_out : unsigned(14 downto 0);
 
   begin
-    uut: reg16bits port map(clk => clk, rst => rst, wr_en => wr_en, data_in => data_in, data_out => data_out);
+    uut: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en, data_in => data_in, data_out => data_out);
     
     total_sim_time: process
     begin
@@ -54,18 +54,25 @@ architecture a_tb_reg16bits of tb_reg16bits is
 
     testbench: process
     begin
-      data_in <= "1111111111111111";
+      -- Escreve valor qualquer
+      data_in <= "111111111111111";
       wr_en <= '1';
-      wait for clk_period;      
-      data_in <= "0000000011111111";
+      wait for clk_period;     
+      
+      -- Não escreve, pois o enable está em 0
+      data_in <= "000000011111111";
       wr_en <= '0';
+
+      -- Registrador resetado: fixo em zero
       wait for clk_period*2;
-      data_in <= "0101010101010101";
+      data_in <= "101010101010101";
       wr_en <= '1';
+
+      -- Como não pega uma borda de clock, o valor não é escrito
       wait for clk_period/4;
-      data_in <= "1010101010101010";
+      data_in <= "010101010101010";
       wr_en <= '1';
       wait;
     end process;
 
-end architecture a_tb_reg16bits;
+end architecture a_tb_reg15bits;

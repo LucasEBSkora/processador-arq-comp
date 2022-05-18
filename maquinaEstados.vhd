@@ -11,18 +11,18 @@ entity maquinaEstados is
 end entity maquinaEstados;
 
 architecture a_maquinaEstados of maquinaEstados is
-    signal estado_interno : unsigned(1 downto 0);
+    signal estado_interno : unsigned(1 downto 0) := "00";
 begin
     process(clk,reset)
     begin
         if reset = '1' then
-            estado_interno <= '00';
+            estado_interno <= "00";
         elsif rising_edge(clk) then
-            if estado_interno <= "11" then
+            if estado_interno >= "10" then
                 estado_interno <= "00";
             else
                 estado_interno <= estado_interno+1;
-            endif;
+            end if;
         end if;
     end process;
     

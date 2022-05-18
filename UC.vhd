@@ -4,23 +4,28 @@ use IEEE.numeric_std.all;
 
 entity UC is
   port (
-    clk       : in std_logic;
-    reset     : in std_logic;
-    instrucao : in unsigned(14 downto 0);
-    PC        : out unsigned(15 downto 0)
+    clk           : in  std_logic;
+    reset         : in  std_logic;
+    instrucao_in  : in  unsigned(14 downto 0);
+    instrucao_out : out unsigned(14 downto 0);
+    estado        : out unsigned(1 downto 0);
+    fetch         : out std_logic;
+    decode        : out std_logic;
+    execute       : out std_logic;
+    PC            : out unsigned(14 downto 0)
   );
 end entity UC;
 
 architecture a_UC of UC is
-  component reg16bits 
+  component reg15bits 
     port(
       clk      : in  std_logic;
       rst      : in  std_logic;
       wr_en    : in  std_logic;
-      data_in  : in  unsigned(15 downto 0);
-      data_out : out unsigned(15 downto 0)
+      data_in  : in  unsigned(14 downto 0);
+      data_out : out unsigned(14 downto 0)
     );
-  end component reg16bits;
+  end component reg15bits;
 
   component maquinaEstados
     port(
@@ -30,32 +35,54 @@ architecture a_UC of UC is
     );
   end component maquinaEstados;
 
-  signal PC_entrada: unsigned(15 downto 0);
-  signal PC_interno : unsigned(15 downto 0);
+  signal PC_entrada: unsigned(14 downto 0);
+  signal PC_interno : unsigned(14 downto 0);
+
+  signal instrucao_interno : unsigned(14 downto 0);
   
-  signal estado  : unsigned(1 downto 0);
+  signal estado_interno    : unsigned(1 downto 0);
+  signal estado_fetch, estado_decode, estado_execute : std_logic;
+
   signal opcode  : unsigned(3 downto 0);
   
   signal wr_en_pc   : std_logic;
+  signal wr_en_in_reg : std_logic;
   signal jump_en    : std_logic; 
   
   constant opcode_nop  : unsigned(3 downto 0) := "0000";
-  constant opcode_jump : unsigned(3 downto 0) := "1111";
+  constant opcode_ja : unsigned(3 downto 0) := "1111";
 begin
 
-  PC_reg: reg16bits port map (clk => clk, rst => reset, wr_en => wr_en_pc, data_in => PC_entrada, data_out => PC_interno);
-  maqEstados: maquinaEstados port map (clk => clk, reset => reset, estado => estado);
+  PC_reg: reg15bits port map (clk => clk, rst => reset, wr_en => wr_en_pc, data_in => PC_entrada, data_out => PC_interno);
+  instrucao_reg: reg15bits port map (clk => clk, rst => reset, wr_en => wr_en_in_reg, data_in => instrucao_in, data_out => instrucao_interno);
+  maqEstados: maquinaEstados port map (clk => clk, reset => reset, estado => estado_interno);
 
-  wr_en_pc <= estado;
+  estado_fetch <= '1' when estado_interno = "00" else
+                  '0';
 
-  opcode <= instrucao(14 downto 11);
+  estado_decode <= '1' when estado_interno = "01" else
+                  '0';
 
-  jump_en <= '1' when opcode = opcode_jump else
+  estado_execute <= '1' when estado_interno = "10" else
+                  '0';
+
+  wr_en_pc <= estado_execute;
+  wr_en_in_reg <= estado_fetch;
+
+  opcode <= instrucao_interno(14 downto 11);
+
+  jump_en <= '1' when opcode = opcode_ja else
              '0'; 
 
-  PC_entrada <= PC_interno(15 downto 11) & instrucao(10 downto 0) when jump_en = '1' else
-                PC_interno + "0000000000000001";
+  PC_entrada <= PC_interno(14 downto 11) & instrucao_interno(10 downto 0) when jump_en = '1' else
+                PC_interno + "000000000000001";
   
+  instrucao_out <= instrucao_interno;
   PC <= PC_interno;
+  
+  fetch <= estado_fetch;
+  decode <= estado_decode;
+  execute <= estado_execute;
+  estado <= estado_interno;
   
 end architecture a_UC;

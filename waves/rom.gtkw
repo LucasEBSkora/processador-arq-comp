@@ -1,0 +1,25 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed May 18 11:00:54 2022
+[*]
+[dumpfile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/tb_rom.ghw"
+[dumpfile_mtime] "Wed May 18 10:59:34 2022"
+[dumpfile_size] 2463
+[savefile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/rom.gtkw"
+[timestart] 0
+[size] 1920 1011
+[pos] -457 -202
+*-28.000000 573000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_rom.
+[sst_width] 212
+[signals_width] 134
+[sst_expanded] 1
+[sst_vpaned_height] 286
+@28
+top.tb_rom.clk
+@22
+#{top.tb_rom.dado[14:0]} top.tb_rom.dado[14] top.tb_rom.dado[13] top.tb_rom.dado[12] top.tb_rom.dado[11] top.tb_rom.dado[10] top.tb_rom.dado[9] top.tb_rom.dado[8] top.tb_rom.dado[7] top.tb_rom.dado[6] top.tb_rom.dado[5] top.tb_rom.dado[4] top.tb_rom.dado[3] top.tb_rom.dado[2] top.tb_rom.dado[1] top.tb_rom.dado[0]
+#{top.tb_rom.endereco[6:0]} top.tb_rom.endereco[6] top.tb_rom.endereco[5] top.tb_rom.endereco[4] top.tb_rom.endereco[3] top.tb_rom.endereco[2] top.tb_rom.endereco[1] top.tb_rom.endereco[0]
+[pattern_trace] 1
+[pattern_trace] 0

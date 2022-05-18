@@ -39,6 +39,8 @@ begin
       wait;
     end process clk_process;
   
+
+    -- não precisa de nada mais complicado: vai iterando pela ROM vendo todos os endereços
     testbench: process
       begin
         while finished /= '1' loop

@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed May 18 10:20:02 2022
+[*]
+[dumpfile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/reg15bits.ghw"
+[dumpfile_mtime] "Wed May 18 10:18:55 2022"
+[dumpfile_size] 2340
+[savefile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/reg15bits.gtkw"
+[timestart] 0
+[size] 1920 1011
+[pos] -457 -202
+*-28.000000 688000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_reg15bits.
+[sst_width] 212
+[signals_width] 142
+[sst_expanded] 1
+[sst_vpaned_height] 286
+@28
+top.tb_reg15bits.wr_en
+top.tb_reg15bits.rst
+top.tb_reg15bits.clk
+top.tb_reg15bits.finished
+@22
+#{top.tb_reg15bits.data_out[14:0]} top.tb_reg15bits.data_out[14] top.tb_reg15bits.data_out[13] top.tb_reg15bits.data_out[12] top.tb_reg15bits.data_out[11] top.tb_reg15bits.data_out[10] top.tb_reg15bits.data_out[9] top.tb_reg15bits.data_out[8] top.tb_reg15bits.data_out[7] top.tb_reg15bits.data_out[6] top.tb_reg15bits.data_out[5] top.tb_reg15bits.data_out[4] top.tb_reg15bits.data_out[3] top.tb_reg15bits.data_out[2] top.tb_reg15bits.data_out[1] top.tb_reg15bits.data_out[0]
+#{top.tb_reg15bits.data_in[14:0]} top.tb_reg15bits.data_in[14] top.tb_reg15bits.data_in[13] top.tb_reg15bits.data_in[12] top.tb_reg15bits.data_in[11] top.tb_reg15bits.data_in[10] top.tb_reg15bits.data_in[9] top.tb_reg15bits.data_in[8] top.tb_reg15bits.data_in[7] top.tb_reg15bits.data_in[6] top.tb_reg15bits.data_in[5] top.tb_reg15bits.data_in[4] top.tb_reg15bits.data_in[3] top.tb_reg15bits.data_in[2] top.tb_reg15bits.data_in[1] top.tb_reg15bits.data_in[0]
+[pattern_trace] 1
+[pattern_trace] 0

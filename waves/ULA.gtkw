@@ -1,0 +1,31 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed May 18 10:45:43 2022
+[*]
+[dumpfile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/ULA.ghw"
+[dumpfile_mtime] "Wed May 18 10:43:40 2022"
+[dumpfile_size] 1558
+[savefile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/ULA.gtkw"
+[timestart] 233500000
+[size] 1920 1056
+[pos] 1463 -202
+*-26.000000 403200000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_ula.
+[sst_width] 212
+[signals_width] 268
+[sst_expanded] 1
+[sst_vpaned_height] 302
+@28
+#{top.tb_ula.sel_op[2:0]} top.tb_ula.sel_op[2] top.tb_ula.sel_op[1] top.tb_ula.sel_op[0]
+@22
+#{top.tb_ula.entr0[14:0]} top.tb_ula.entr0[14] top.tb_ula.entr0[13] top.tb_ula.entr0[12] top.tb_ula.entr0[11] top.tb_ula.entr0[10] top.tb_ula.entr0[9] top.tb_ula.entr0[8] top.tb_ula.entr0[7] top.tb_ula.entr0[6] top.tb_ula.entr0[5] top.tb_ula.entr0[4] top.tb_ula.entr0[3] top.tb_ula.entr0[2] top.tb_ula.entr0[1] top.tb_ula.entr0[0]
+#{top.tb_ula.entr1[14:0]} top.tb_ula.entr1[14] top.tb_ula.entr1[13] top.tb_ula.entr1[12] top.tb_ula.entr1[11] top.tb_ula.entr1[10] top.tb_ula.entr1[9] top.tb_ula.entr1[8] top.tb_ula.entr1[7] top.tb_ula.entr1[6] top.tb_ula.entr1[5] top.tb_ula.entr1[4] top.tb_ula.entr1[3] top.tb_ula.entr1[2] top.tb_ula.entr1[1] top.tb_ula.entr1[0]
+#{top.tb_ula.saida[14:0]} top.tb_ula.saida[14] top.tb_ula.saida[13] top.tb_ula.saida[12] top.tb_ula.saida[11] top.tb_ula.saida[10] top.tb_ula.saida[9] top.tb_ula.saida[8] top.tb_ula.saida[7] top.tb_ula.saida[6] top.tb_ula.saida[5] top.tb_ula.saida[4] top.tb_ula.saida[3] top.tb_ula.saida[2] top.tb_ula.saida[1] top.tb_ula.saida[0]
+@29
+top.tb_ula.uut.entr0_menor
+@28
+top.tb_ula.uut.entr0_maior
+top.tb_ula.uut.op_zero
+[pattern_trace] 1
+[pattern_trace] 0

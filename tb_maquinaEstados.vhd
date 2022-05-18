@@ -49,4 +49,8 @@ begin
         wait;
     end process clk_process;
 
+    -- não precisa realmente de um processo para o teste: a máquina não tem nenhuma outra entrada, 
+    -- e deve ficar iterando entre seus estados sempre
+
+
 end architecture a_tb_MaquinaEstados;

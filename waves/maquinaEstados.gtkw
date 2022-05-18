@@ -1,0 +1,24 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed May 18 10:36:04 2022
+[*]
+[dumpfile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/maquinaEstados.ghw"
+[dumpfile_mtime] "Wed May 18 10:35:33 2022"
+[dumpfile_size] 2473
+[savefile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/maquinaEstados.gtkw"
+[timestart] 0
+[size] 1920 1011
+[pos] -457 -202
+*-28.000000 348000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_maquinaestados.
+[sst_width] 212
+[signals_width] 118
+[sst_expanded] 1
+[sst_vpaned_height] 286
+@28
+top.tb_maquinaestados.reset
+top.tb_maquinaestados.clk
+#{top.tb_maquinaestados.estado[1:0]} top.tb_maquinaestados.estado[1] top.tb_maquinaestados.estado[0]
+[pattern_trace] 1
+[pattern_trace] 0
