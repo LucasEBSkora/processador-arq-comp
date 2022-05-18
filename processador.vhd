@@ -4,14 +4,14 @@ use IEEE.numeric_std.all;
 
 entity processador is
   port (
-    clk                               : in  std_logic;
-    rst                               : in  std_logic;
-    estado                            : out unsigned(1 downto 0);
-    PC                                : out unsigned(14 downto 0);
-    instrucao_in                      : out unsigned(14 downto 0);
-    reg1                              : out unsigned(14 downto 0);
-    reg2                              : out unsigned(14 downto 0);
-    saida                             : out unsigned(14 downto 0)
+    clk       : in  std_logic;
+    rst       : in  std_logic;
+    estado    : out unsigned(1 downto 0);
+    PC        : out unsigned(14 downto 0);
+    instrucao : out unsigned(14 downto 0);
+    reg1      : out unsigned(14 downto 0);
+    reg2      : out unsigned(14 downto 0);
+    saida     : out unsigned(14 downto 0)
   );
 end entity processador;
 
@@ -81,15 +81,13 @@ architecture a_processador of processador is
 
   signal reg_instrucao : unsigned(14 downto 0);
   signal opcode        : unsigned(14 downto 11);
-
-  -- ADD, SUB
-  signal sel_operando_aritmetica : unsigned(1 downto 0);
-  signal dado_imediato           : unsigned(14 downto 0);
-
+  
   -- LD
   signal destino_ld : unsigned(2 downto 0);
   
   -- ADD, SUB, LD 
+  signal sel_operando_aritmetica_ou_ld    : unsigned(1 downto 0);
+  signal dado_imediato                    : unsigned(14 downto 0);
   signal sel_registrador_aritmetica_ou_ld : unsigned(2 downto 0);
   
   constant reg_Z  : unsigned(2 downto 0) := "000";
@@ -120,17 +118,18 @@ begin
   
   opcode <= reg_instrucao(14 downto 11);
 
-  sel_operando_aritmetica <= reg_instrucao (10 downto 9);
-  dado_imediato <= "000000" & reg_instrucao(8 downto 0);
-  
-  destino_ld <= reg_instrucao(5 downto 3);
+  sel_operando_aritmetica_ou_ld <= reg_instrucao (10 downto 9);
+  dado_imediato <= "000000" & reg_instrucao(8 downto 0) when opcode = opcode_add or opcode = opcode_sub else
+                   "000000000" & reg_instrucao(5 downto 0) when opcode = opcode_ld else 
+                   "000000000000000";
+  destino_ld <= reg_instrucao(8 downto 6);
  
   sel_registrador_aritmetica_ou_ld <= reg_instrucao(2 downto 0);
 
   reg_wr_en <= '1' when execute = '1' and (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld) else 
                '0';
 
-  sel_entr1_ULA <= '0' when ((opcode = opcode_add or opcode = opcode_sub) and sel_operando_aritmetica = "01") or (opcode = opcode_ld) else -- ld funciona somando valor do registrador escolhido à zero 
+  sel_entr1_ULA <= '0' when ((opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld) and sel_operando_aritmetica_ou_ld = "01") else -- ld funciona somando zero ao valor escolhido
                    '1';
 
 
@@ -155,5 +154,7 @@ begin
   estado <= estado_interno;
   PC <= PC_interno;
   saida <= saidaULA;
-
+  instrucao <= reg_instrucao;
+  reg1 <= entr0ULA;
+  reg2 <= regB;
 end architecture a_processador;
