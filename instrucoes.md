@@ -4,6 +4,8 @@ Todas instruções tem exatamente 15 bits. Temos 8 registradores:
   * X e Y: Registradores de índice, acessam memória 
   * t0 a t3: Registradores de "uso geral"
 
+Como discutido com o professor, como as instruções do STM8 possuem muitos modos de endereçamento, a maior parte dos quais acessa memória RAM (que ainda não temos), e tem pouquíssimos registradores, a maior parte das instruções foi implementada parcialmente (sem o acesso a memória) ou com alterações (possibilitando usar os registradores t0 a t3, por exemplo). A pasta "instrucoes" contém prints do datasheet do processador-base, com setas vermelhas indicando grosso modo as formas de usar as instruções que foram implementadas.
+
 # NOP
 ## Descrição
   Faz nada.
