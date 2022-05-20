@@ -27,7 +27,9 @@ architecture a_processador of processador is
     port (
       clk           : in  std_logic;
       reset         : in  std_logic;
+      jump_en       : in  std_logic; 
       instrucao_in  : in  unsigned(14 downto 0);
+      endereco_jump : in  unsigned(10 downto 0);
       instrucao_out : out unsigned(14 downto 0);
       estado        : out unsigned(1 downto 0);
       fetch         : out std_logic;
@@ -89,6 +91,10 @@ architecture a_processador of processador is
   signal sel_operando_aritmetica_ou_ld    : unsigned(1 downto 0);
   signal dado_imediato                    : unsigned(14 downto 0);
   signal sel_registrador_aritmetica_ou_ld : unsigned(2 downto 0);
+
+  -- JA
+  signal endereco_jump : unsigned(10 downto 0);
+  signal jump_en       : std_logic;
   
   constant reg_Z  : unsigned(2 downto 0) := "000";
   constant reg_A  : unsigned(2 downto 0) := "001";
@@ -106,7 +112,7 @@ architecture a_processador of processador is
   constant opcode_ja  : unsigned(3 downto 0) := "1111"; -- Unidade de controle faz tudo nesse caso
 begin
   rom_inst: rom port map (clk => clk, endereco => endereco_instrucao, dado => saida_memoria);
-  uc_inst: UC port map (clk => clk, reset => rst, instrucao_in => saida_memoria, instrucao_out => reg_instrucao, estado => estado_interno, 
+  uc_inst: UC port map (clk => clk, reset => rst, jump_en => jump_en, instrucao_in => saida_memoria, endereco_jump => endereco_jump, instrucao_out => reg_instrucao, estado => estado_interno, 
                         fetch => fetch, decode => decode, execute => execute, PC => PC_interno);
   ula_inst: ULA port map(entr0 => entr0ULA, entr1 => entr1ULA, 
                          sel_op => sel_operacao, saida => saidaULA, 
@@ -116,11 +122,17 @@ begin
                           selRegWrite => selRegWrite, selRegA => selRegA, selRegB => selRegB,
                           writedata => saidaULA, regA => entr0ULA, regB => regB);
   
+  endereco_jump <= reg_instrucao(10 downto 0);
+
+  jump_en <= '1' when opcode = opcode_ja else
+             '0'; 
+
   opcode <= reg_instrucao(14 downto 11);
 
   sel_operando_aritmetica_ou_ld <= reg_instrucao (10 downto 9);
-  dado_imediato <= "000000" & reg_instrucao(8 downto 0) when opcode = opcode_add or opcode = opcode_sub else
-                   "000000000" & reg_instrucao(5 downto 0) when opcode = opcode_ld else 
+  
+  dado_imediato <= unsigned(resize(signed(reg_instrucao(8 downto 0)), 15)) when opcode = opcode_add or opcode = opcode_sub else
+                   unsigned(resize(signed(reg_instrucao(5 downto 0)), 15)) when opcode = opcode_ld else 
                    "000000000000000";
   destino_ld <= reg_instrucao(8 downto 6);
  

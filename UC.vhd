@@ -6,7 +6,9 @@ entity UC is
   port (
     clk           : in  std_logic;
     reset         : in  std_logic;
+    jump_en       : in  std_logic; 
     instrucao_in  : in  unsigned(14 downto 0);
+    endereco_jump : in  unsigned(10 downto 0);
     instrucao_out : out unsigned(14 downto 0);
     estado        : out unsigned(1 downto 0);
     fetch         : out std_logic;
@@ -35,7 +37,7 @@ architecture a_UC of UC is
     );
   end component maquinaEstados;
 
-  signal PC_entrada: unsigned(14 downto 0);
+  signal PC_entrada : unsigned(14 downto 0);
   signal PC_interno : unsigned(14 downto 0);
 
   signal instrucao_interno : unsigned(14 downto 0);
@@ -45,12 +47,8 @@ architecture a_UC of UC is
 
   signal opcode  : unsigned(3 downto 0);
   
-  signal wr_en_pc   : std_logic;
+  signal wr_en_pc     : std_logic;
   signal wr_en_in_reg : std_logic;
-  signal jump_en    : std_logic; 
-  
-  constant opcode_nop  : unsigned(3 downto 0) := "0000";
-  constant opcode_ja : unsigned(3 downto 0) := "1111";
 begin
 
   PC_reg: reg15bits port map (clk => clk, rst => reset, wr_en => wr_en_pc, data_in => PC_entrada, data_out => PC_interno);
@@ -72,10 +70,7 @@ begin
 
   opcode <= instrucao_interno(14 downto 11);
 
-  jump_en <= '1' when opcode = opcode_ja else
-             '0'; 
-
-  PC_entrada <= PC_interno(14 downto 11) & instrucao_interno(10 downto 0) when jump_en = '1' else
+  PC_entrada <= PC_interno(14 downto 11) & endereco_jump when jump_en = '1' else
                 PC_interno + "000000000000001";
   
   instrucao_out <= instrucao_interno;
