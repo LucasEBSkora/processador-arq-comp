@@ -64,9 +64,9 @@ begin
   estado_execute <= '1' when estado_interno = "10" else
                   '0';
 
-  wr_en_pc <= '1' when  estado_decode = '1' else
+  wr_en_pc <= '1' when  estado_execute = '1' else
               '0';
-  wr_en_in_reg <= estado_fetch;
+  wr_en_in_reg <= estado_decode;
 
   opcode <= instrucao_interno(14 downto 11);
 
