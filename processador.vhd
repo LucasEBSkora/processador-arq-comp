@@ -96,7 +96,7 @@ architecture a_processador of processador is
   signal dado_imediato                    : unsigned(14 downto 0);
   signal sel_registrador_aritmetica_ou_ld : unsigned(2 downto 0);
 
-  -- JA
+  -- JP
   
   -- constantes para acesso aos registradores
   constant reg_Z  : unsigned(2 downto 0) := "000";
@@ -113,7 +113,7 @@ architecture a_processador of processador is
   constant opcode_add : unsigned(3 downto 0) := "0001";
   constant opcode_sub : unsigned(3 downto 0) := "0010";
   constant opcode_ld  : unsigned(3 downto 0) := "0011";
-  constant opcode_ja  : unsigned(3 downto 0) := "1111";
+  constant opcode_jp  : unsigned(3 downto 0) := "1111";
 begin
   ula_inst: ULA port map(entr0 => entr0ULA, entr1 => entr1ULA, sel_op => sel_operacao, saida => saidaULA, 
                          op_zero => op_zero, entr0_maior => entr0_maior, entr0_menor => entr0_menor);
@@ -155,7 +155,7 @@ begin
 
   -- sinais UC
 
-  jump_en <= '1' when opcode = opcode_ja else
+  jump_en <= '1' when opcode = opcode_jp else
     '0'; 
 
   endereco_jump <= reg_instrucao(10 downto 0);
