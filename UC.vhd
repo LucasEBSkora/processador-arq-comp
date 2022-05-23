@@ -45,8 +45,6 @@ architecture a_UC of UC is
   signal estado_interno    : unsigned(1 downto 0);
   signal estado_fetch, estado_decode, estado_execute : std_logic;
 
-  signal opcode  : unsigned(3 downto 0);
-  
   signal wr_en_pc     : std_logic;
   signal wr_en_in_reg : std_logic;
 begin
@@ -54,6 +52,9 @@ begin
   PC_reg: reg15bits port map (clk => clk, rst => reset, wr_en => wr_en_pc, data_in => PC_entrada, data_out => PC_interno);
   instrucao_reg: reg15bits port map (clk => clk, rst => reset, wr_en => wr_en_in_reg, data_in => instrucao_in, data_out => instrucao_interno);
   maqEstados: maquinaEstados port map (clk => clk, reset => reset, estado => estado_interno);
+
+  PC_entrada <= PC_interno(14 downto 11) & endereco_jump when jump_en = '1' else
+                PC_interno + "000000000000001";
 
   estado_fetch <= '1' when estado_interno = "00" else
                   '0';
@@ -68,17 +69,13 @@ begin
               '0';
   wr_en_in_reg <= estado_decode;
 
-  opcode <= instrucao_interno(14 downto 11);
-
-  PC_entrada <= PC_interno(14 downto 11) & endereco_jump when jump_en = '1' else
-                PC_interno + "000000000000001";
-  
+  -- saídas
   instrucao_out <= instrucao_interno;
-  PC <= PC_interno;
-  
+  estado <= estado_interno;
   fetch <= estado_fetch;
   decode <= estado_decode;
   execute <= estado_execute;
-  estado <= estado_interno;
+  PC <= PC_interno;
+  
   
 end architecture a_UC;
