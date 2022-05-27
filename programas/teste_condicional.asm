@@ -20,10 +20,10 @@ ADD A, #$1 //B"0001_00_001_000001"
 LD t0, A //B"0011_01_100_000001"
 
 //5. Se R3<30 salta para instrução do passo 3
-
+JRSLT terceira_instrucao
 
 //6. Copia valor de R4 para R5
-
+MOV t2, t1 //
 
 Que seria traduzido para o seguinte programa:
 B"0011_00_100_000000"
