@@ -91,3 +91,20 @@ onde
 | opcode (14 a 11) |     ADDR(10 a 0)    |
 |------------------|:-------------------:|
 | `1111`           | Endereço de 11 bits |
+
+# JRxx (Jump Relative) 
+## formato Assembly:
+`JRxx ADDR`, onde `xx` é o tipo de condição e `ADDR` é o offset para fazer o pulo relativo (substitui os bits menos significativos do program counter), ou uma label definida como `label ADDR` que indica a instrução imediatamente após o label.
+## formato de instrução:
+| opcode (14 a 11) |   xx(10 a 6) |   ADDR(5 a 0)   |
+|------------------|:------------:|:---------------:|
+| `1110`           |   Condição   | Offset de 6 bits|
+onde
+| Descrição                                                  |   SEL   |
+|------------------------------------------------------------|:-------:|
+| Verifica se os dados são iguais                            | `00000` |
+| Verifica se os dados são diferentes                        | `00001` |
+| Verifica se é maior                                        | `00010` |
+| Verifica se é maior ou igual                               | `00011` |
+| Verifica se é menor                                        | `00110` |
+| Verifica se é menor ou igual                               | `00111` |
