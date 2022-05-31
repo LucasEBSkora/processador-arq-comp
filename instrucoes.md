@@ -99,12 +99,14 @@ onde
 | opcode (14 a 11) |   xx(10 a 6) |   ADDR(5 a 0)   |
 |------------------|:------------:|:---------------:|
 | `1110`           |   Condição   | Offset de 6 bits|
+
 onde
-| Descrição                                                  |   SEL   |
-|------------------------------------------------------------|:-------:|
-| Verifica se os dados são iguais                            | `00000` |
-| Verifica se os dados são diferentes                        | `00001` |
-| Verifica se é maior                                        | `00010` |
-| Verifica se é maior ou igual                               | `00011` |
-| Verifica se é menor                                        | `00110` |
-| Verifica se é menor ou igual                               | `00111` |
+
+| Descrição                                                  |   SEL   |  JRxx  |
+|------------------------------------------------------------|:-------:|:------:|
+| Verifica se os dados são iguais                            | `00000` |  JREQ  |
+| Verifica se os dados são diferentes                        | `00001` |  JRNE  |
+| Verifica se é maior                                        | `00010` |  JRSGE |
+| Verifica se é maior ou igual                               | `00011` |  JRSGT |
+| Verifica se é menor                                        | `00110` |  JRSLE |
+| Verifica se é menor ou igual                               | `00111` |  JRSLT |
