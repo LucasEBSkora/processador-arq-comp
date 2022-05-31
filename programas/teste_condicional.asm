@@ -11,7 +11,7 @@ label terceira_instrucao
 LD A,#$0 //B"0011_00_001_000000"
 ADD A,t0 //B"0001_01_000000_100"
 ADD A,t1 //B"0001_00_000000001"
-LD t1, A //Precisamos resetar t1 aqui? //B"0011_01_101_000001"
+LD t1, A //B"0011_01_101_000001"
 
 //4. Soma 1 em R3
 LD A,#$0 //B"0011_00_001_000000"
@@ -20,10 +20,10 @@ ADD A, #$1 //B"0001_00_001_000001"
 LD t0, A //B"0011_01_100_000001"
 
 //5. Se R3<30 salta para instrução do passo 3
-JRSLT terceira_instrucao
+JRSLT terceira_instrucao  //B"1110_00110_0001000"
 
 //6. Copia valor de R4 para R5
-MOV t2, t1 //
+LD t2, t1 //B"0011_01_110_000101"
 
 Que seria traduzido para o seguinte programa:
 B"0011_00_100_000000"
@@ -36,3 +36,5 @@ B"0011_00_001_000000"
 B"0001_01_000000_100"
 B"0001_00_001_000001"
 B"0011_01_100_000001"
+B"1110_00110_0001000"
+B"0011_01_110_000101"
