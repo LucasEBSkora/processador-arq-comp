@@ -3,6 +3,11 @@ Todas instruções tem exatamente 15 bits. Temos 8 registradores:
   * A: Acumulador, único capaz de operações de soma e subtração;
   * X e Y: Registradores de índice, acessam memória 
   * t0 a t3: Registradores de "uso geral"
+  * Embora não seja acessível exceto pela instrução JRxx, há um registrador de estados que guarda informações sobre a última operação. As flags guardadas são:
+    * Overflow(V): houve overflow na última operação aritmética com sinal;
+    * Negative(N): a última operação - mesmo se de movimentação de dados apenas - teve resultado negativo;
+    * Zero(Z): a última operação - mesmo se de movimentação de dados apenas - teve resultado zero;
+    * Carry(C): A última operação aritmética gerou carry
 
 Como discutido com o professor, como as instruções do STM8 possuem muitos modos de endereçamento, a maior parte dos quais acessa memória RAM (que ainda não temos), e tem pouquíssimos registradores, a maior parte das instruções foi implementada parcialmente (sem o acesso a memória) ou com alterações (possibilitando usar os registradores t0 a t3, por exemplo). A pasta "instrucoes" contém prints do datasheet do processador-base, com setas vermelhas indicando grosso modo as formas de usar as instruções que foram implementadas.
 
@@ -15,6 +20,8 @@ Como discutido com o professor, como as instruções do STM8 possuem muitos modo
 | opcode (14 a 11) |       (10 a 0)      |
 |------------------|:-------------------:|
 | `0000`           | indiferente         |
+## Flags afetadas
+Nenhuma.
 
 # ADD
 ## Descrição
@@ -38,6 +45,13 @@ onde:
 | Retira dado do endereço indicado (não implementado)        | `10` | Endereço de 9 bits indicando posição na RAM |
 | Retira dado do local apontado por um registrador de índice | `11` | '0' para o registrador X, '1' para o Y      |
 
+## Flags afetadas:
+Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
+  * V : `(A14*M14 + M14*!R14 + !R14*A14) XOR (A13*M13 + M13*!R13 + !R13*A13)`
+  * N : `R14`
+  * Z : `R = 0`
+  * C : `A14*M14 + M14*!R14 + !R14*A14`
+
 # SUB
 ## Descrição
   subtrai um valor do registrador acumulador A e armazena o resultado acumulador. Pode subtrair valores imediatos, registradores ou memória.
@@ -50,6 +64,13 @@ onde:
 | opcode (14 a 11) |   SEL (10 a 9)  | DADO                   |
 |------------------|:---------------:|------------------------|
 | `0010`           | Seleciona fonte | De onde retirar o dado |
+
+## Flags afetadas:
+Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
+  * V : `(A14*M14 + A14*R14 + A14*M14*R14) XOR (A13*M13 + A13*R13 + A13*M13*R13)`
+  * N : `R14`
+  * Z : `R = 0`
+  * C : `!A14*M14 + !A14*R14 + A14.M14.R14`
 
 onde
 
@@ -83,30 +104,59 @@ onde
 | Retira dado do local apontado por um registrador de índice | `11` | '0' para o registrador X, '1' para o Y      |
 
 
+## Flags afetadas:
+Sendo R14-0 os bits escritos no destino:
+  * N : `R14`
+  * Z : `R = 0`
+As flags C e V não são alteradas.
 
-# JP (Jump Absolute) 
+# JRxx (Jump Relative) 
+## Descrição
+Pula somando o parâmetro ao valor do PC se uma condição verificada no registrador de estados é verdadeira.
 ## formato Assembly:
-`JP ADDR`, onde `ADDR` é o endereço de 11 bits para pular incondicionalmente (substitui os bits menos significativos do program counter), ou uma label definida como `label ADDR` que indica a instrução imediatamente após o label.
+`JRxx ADDR`, onde `xx` é o tipo de condição e `ADDR` é o offset para fazer o pulo relativo (substitui os bits menos significativos do program counter), ou uma label definida como `<nome da label>:` que indica a instrução imediatamente após o label.
+## formato de instrução:
+| opcode (14 a 11) |   xx(10 a 7) |        ADDR(6 a 0)        |
+|------------------|:------------:|:-------------------------:|
+| `1110`           |   Condição   | Offset com sinal de 7 bits|
+
+onde
+
+| Verificação sobre a última operação                                            | xx     | Mnemônico | Condição verificada no registrador |
+|--------------------------------------------------------------------------------|--------|-----------|------------------------------------|
+| Verifica se houve Carry                                                        | `0000` | JRC       | `C = 1`                            |
+| Verifica se os operandos eram iguais                                           | `0001` | JREQ      | `Z = 1`                            |
+| Verifica se o resultado era negativo                                           | `0010` | JRMI      | `N = 1`                            |
+| Verifica se não houve Carry                                                    | `0011` | JRNC      | `C = 0`                            |
+| Verifica se os operandos eram diferentes                                       | `0100` | JRNE      | `Z = 0`                            |
+| Verifica se não houve overflow                                                 | `0101` | JRNV      | `V = 0`                            |
+| Verifica se o resultado era estritamente positivo                              | `0110` | JRPL      | `Z = 0 AND N = 0`                  |
+| Verifica se o operando da esquerda era maior ou igual ao da direita, com sinal | `0111` | JRSGE     | `(N XOR V) = 0`                    |
+| Verifica se o operando da esquerda era maior que o da direita, com sinal       | `1000` | JRSGT     | `Z OR (N XOR V)) = 0`              |
+| Verifica se o operando da esquerda era menor ou igual ao da direita, com sinal | `1001` | JRSLE     | `(Z OR (N XOR V)) = 1`             |
+| Verifica se o operando da esquerda era menor que o da direita, com sinal       | `1010` | JRSLT     | `(N XOR V) = 1 `                   |
+| Verifica se o operando da esquerda era maior ou igual ao da direita, sem sinal | `0011` | JRUGE     | `C = 0`                            |
+| Verifica se o operando da esquerda era maior que o da direita, sem sinal       | `1011` | JRUGT     | `C = 0 AND Z = 0`                  |
+| Verifica se o operando da esquerda era menor ou igual ao da direita, sem sinal | `1100` | JRULE     | `C = 1 OR Z = 1`                   |
+| Verifica se o operando da esquerda era menor que o da direita, sem sinal       | `0000` | JRULT     | `C = 1`                            |
+| Verifica se houve overflow                                                     | `1101` | JRV       | `V = 1`                            |
+| Verifica se o resultado é não-negativo                                         | `1110` | JRNMI     | `N = 0`                            |
+| Nunca pula                                                                     | `1111` | JRF       |  false                             |
+
+OBS: As operações de comparação (JREQ, JRNE, JRSGE, JRSGT, JRSLE, JRSLT, JRUGE, JRUGT, JRULE, JRULT) só mantém seu comportamento "semântico" se a última operação foi uma subtração entre os valores que se desejava comparar. A operação JRNMI não existe na arquitetura STM8, e foi implementada pois havia um índice sobrando, e a operação JRPL, nessa arquitetura, teria o comportamento da JRNMI.
+
+## Flags afetadas
+Nenhuma.
+
+# JP (Jump Absolute)
+## Descrição
+"Pula" setando o PC para o label ou endereço passado.
+## formato Assembly:
+`JP ADDR`, onde `ADDR` é o endereço de 11 bits para pular incondicionalmente (substitui os bits menos significativos do program counter), ou uma label definida como `<nome da label>:` que indica a instrução imediatamente após o label.
 ## formato de instrução:
 | opcode (14 a 11) |     ADDR(10 a 0)    |
 |------------------|:-------------------:|
 | `1111`           | Endereço de 11 bits |
 
-# JRxx (Jump Relative) 
-## formato Assembly:
-`JRxx ADDR`, onde `xx` é o tipo de condição e `ADDR` é o offset para fazer o pulo relativo (substitui os bits menos significativos do program counter), ou uma label definida como `label ADDR` que indica a instrução imediatamente após o label.
-## formato de instrução:
-| opcode (14 a 11) |   xx(10 a 6) |   ADDR(5 a 0)   |
-|------------------|:------------:|:---------------:|
-| `1110`           |   Condição   | Offset de 6 bits|
-
-onde
-
-| Descrição                                                  |   SEL   |  JRxx  |
-|------------------------------------------------------------|:-------:|:------:|
-| Verifica se os dados são iguais                            | `00000` |  JREQ  |
-| Verifica se os dados são diferentes                        | `00001` |  JRNE  |
-| Verifica se é maior                                        | `00010` |  JRSGT |
-| Verifica se é maior ou igual                               | `00011` |  JRSGE |
-| Verifica se é menor                                        | `00110` |  JRSLT |
-| Verifica se é menor ou igual                               | `00111` |  JRSLE |
+## Flags afetadas
+Nenhuma.

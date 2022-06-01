@@ -1,0 +1,36 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed Jun  1 17:49:06 2022
+[*]
+[dumpfile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/regEstado.ghw"
+[dumpfile_mtime] "Wed Jun  1 17:46:55 2022"
+[dumpfile_size] 2144
+[savefile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/regEstado.gtkw"
+[timestart] 607000000
+[size] 952 1003
+[pos] 503 -202
+*-28.000000 1084000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[sst_width] 212
+[signals_width] 78
+[sst_expanded] 1
+[sst_vpaned_height] 283
+@28
+top.tb_regestado.rst
+top.tb_regestado.clk
+top.tb_regestado.e_c
+top.tb_regestado.e_z
+top.tb_regestado.e_n
+top.tb_regestado.e_v
+top.tb_regestado.i_c
+top.tb_regestado.i_z
+@29
+top.tb_regestado.i_n
+@28
+top.tb_regestado.i_v
+top.tb_regestado.o_c
+top.tb_regestado.o_z
+top.tb_regestado.o_n
+top.tb_regestado.o_v
+[pattern_trace] 1
+[pattern_trace] 0

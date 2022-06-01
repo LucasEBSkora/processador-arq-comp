@@ -8,7 +8,7 @@ entity UC is
     reset         : in  std_logic;
     jump_en       : in  std_logic; 
     instrucao_in  : in  unsigned(14 downto 0);
-    endereco_jump : in  unsigned(10 downto 0);
+    endereco_jump : in  unsigned(14 downto 0);
     instrucao_out : out unsigned(14 downto 0);
     estado        : out unsigned(1 downto 0);
     fetch         : out std_logic;
@@ -53,7 +53,7 @@ begin
   instrucao_reg: reg15bits port map (clk => clk, rst => reset, wr_en => wr_en_in_reg, data_in => instrucao_in, data_out => instrucao_interno);
   maqEstados: maquinaEstados port map (clk => clk, reset => reset, estado => estado_interno);
 
-  PC_entrada <= PC_interno(14 downto 11) & endereco_jump when jump_en = '1' else
+  PC_entrada <= endereco_jump when jump_en = '1' else
                 PC_interno + "000000000000001";
 
   estado_fetch <= '1' when estado_interno = "00" else
@@ -65,8 +65,7 @@ begin
   estado_execute <= '1' when estado_interno = "10" else
                   '0';
 
-  wr_en_pc <= '1' when  estado_execute = '1' else
-              '0';
+  wr_en_pc <= estado_execute;
   wr_en_in_reg <= estado_decode;
 
   -- saídas
@@ -76,6 +75,5 @@ begin
   decode <= estado_decode;
   execute <= estado_execute;
   PC <= PC_interno;
-  
   
 end architecture a_UC;

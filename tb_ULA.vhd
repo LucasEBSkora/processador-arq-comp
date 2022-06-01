@@ -8,21 +8,21 @@ end;
 architecture a_tb_ULA of tb_ULA is
 	component ULA
 		port ( 
-			entr0, entr1 											: in  unsigned(14 downto 0);
-			sel_op 			 											: in  unsigned(2 downto 0);
-			saida 			 											: out unsigned(14 downto 0);
-			op_zero, entr0_maior, entr0_menor : out std_logic
+			entr0, entr1 : in  unsigned(14 downto 0);
+			sel_op 			 : in  unsigned(2 downto 0);
+			saida 			 : out unsigned(14 downto 0);
+			V, N, Z, C	 : out std_logic
 		);
 	end component;
 	
-	signal entr0, entr1 										 : unsigned(14 downto 0);
-	signal sel_op 													 : unsigned(2 downto 0);
-	signal saida 														 : unsigned(14 downto 0);
-	signal op_zero, entr0_maior, entr0_menor : std_logic;
+	signal entr0, entr1 : unsigned(14 downto 0);
+	signal sel_op 		  : unsigned( 2 downto 0);
+	signal saida 			  : unsigned(14 downto 0);
+	signal V, N, Z, C   : std_logic;
 
 	begin
 		uut: ULA port map(entr0 => entr0, entr1 => entr1, sel_op => sel_op,
-										  saida => saida, op_zero => op_zero, entr0_maior => entr0_maior, entr0_menor => entr0_menor);
+										  saida => saida, V => V, N => N, Z => Z, C => C);
 		process
 		begin
 
@@ -41,19 +41,41 @@ architecture a_tb_ULA of tb_ULA is
 			entr1 <= "111111111111000";
 			wait for 50 ns;
 
+			-- 7FFF + 7FFF = 8000 (overflow e carry)
+			entr0 <= "111111111111111";
+			entr1 <= "111111111111111";
+			wait for 50 ns;
+			
+			-- -50 + -57 = -107 (carry, não overflow)
+			entr0 <= "111111111001110";
+			entr1 <= "111111111000111";
+			wait for 50 ns;
+
+			-- 17000 + 16000 = 33000 (overflow, não carry)
+			entr0 <= "100001001101000";
+			entr1 <= "011111010000000";
+			wait for 50 ns;
+
 			-- 7FFF - 7FFF = 0
 			sel_op <= "001";
 			entr0 <= "111111111111111";
 			entr1 <= "111111111111111";
+			wait for 50 ns;
+
 			-- FF - 4 = FB
 			wait for 50 ns;
 			entr0 <= "000000011111111";
 			entr1 <= "000000000000100";
 
 			-- FF - 100 = -1 = 7FFF_c2
-			wait for 50 ns;
+			
 			entr0 <= "000000011111111";
 			entr1 <= "000000100000000";
+			wait for 50 ns;
+
+			-- 0 - 7FFF = -7FFF = 4000_c2 (carry, mas não overflow)
+			entr0 <= "000000000000000";
+			entr1 <= "111111111111111";
 			wait for 50 ns;
 
 			-- 5555 | 2AAA = 7FFF
