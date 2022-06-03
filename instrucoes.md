@@ -16,10 +16,10 @@ Como discutido com o professor, como as instruções do STM8 possuem muitos modo
   Faz nada.
 ## Formato Assembly
   `NOP`
-## formato de instrução 
-| opcode (14 a 11) |       (10 a 0)      |
+## Formato de instrução 
+| opcode (14 a 12) |       (11 a 0)      |
 |------------------|:-------------------:|
-| `0000`           | indiferente         |
+| `000`            | indiferente         |
 ## Flags afetadas
 Nenhuma.
 
@@ -32,9 +32,9 @@ Nenhuma.
   * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 9 bits selecionando um endereço de RAM (ainda não implementado)
   * Soma indireta: `ADD A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y ou seus números associados, sendo usado como ponteiro
 ## Formato de instrução
-| opcode (14 a 11) |   SEL (10 a 9)  | DADO                   |
+| opcode (14 a 12) |   SEL (10 a 9)  | DADO                   |
 |------------------|:---------------:|------------------------|
-| `0001`           | Seleciona fonte | De onde retirar o dado |
+| `001`            | Seleciona fonte | De onde retirar o dado |
 
 onde:
 
@@ -61,9 +61,9 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
   * Subtração com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 9 bits selecionando um endereço de RAM (ainda não implementado)
   * Subtração indireta: `SUB A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y ou seus números associados, sendo usado como ponteiro
 ## Formato de instrução
-| opcode (14 a 11) |   SEL (10 a 9)  | DADO                   |
+| opcode (14 a 12) |   SEL (10 a 9)  | DADO                   |
 |------------------|:---------------:|------------------------|
-| `0010`           | Seleciona fonte | De onde retirar o dado |
+| `010`            | Seleciona fonte | De onde retirar o dado |
 
 ## Flags afetadas:
 Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
@@ -90,9 +90,9 @@ onde
   * memória para registrador: `LD (DESTINO),$ENDEREÇO`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM (ainda não implementado).
   * memória por ponteiro para registrador: `LD (DESTINO),(REGISTRADOR)`, onde REGISTRADOR é X ou Y ou seus números associados, sendo usado como ponteiro
 ## Formato de instrução
-| opcode (14 a 11) |       SEL (10 a 9)      | DESTINO (8 a 6)                                | FONTE (5 a 0)              |
+| opcode (14 a 12) |       SEL (10 a 9)      | DESTINO (8 a 6)                                | FONTE (5 a 0)              |
 |------------------|:-----------------------:|------------------------------------------------|----------------------------|
-| `0011`           | Seleciona tipo da fonte | Número de 3 bits identificando um registrador  | De onde o valor é retirado |
+| `011`            | Seleciona tipo da fonte | Número de 3 bits identificando um registrador  | De onde o valor é retirado |
 
 onde
 
@@ -110,15 +110,30 @@ Sendo R14-0 os bits escritos no destino:
   * Z : `R = 0`
 As flags C e V não são alteradas.
 
+# MOV
+## Descrição
+  Carrega um endereço na RAM com o valor de outro endereço ou um valor imediato.
+## Formato Assembly
+  * imediato para memória: `MOV $DESTINO, #$FONTE`, onde `DESTINO` é um endereço e `FONTE` um valor imediato
+  * Memória para memória: `MOV $DESTINO, $FONTE`, onde `DESTINO` e `FONTE` são endereços 
+## Formato  de instrução:
+| opcode (14 a 12) | DESTINO(11 a 6)    | SEL (5)                                                         | FONTE(4 a 0)                |
+|------------------|--------------------|-----------------------------------------------------------------|-----------------------------|
+| `100`            | Endereço de 6 bits | Seleciona se o valor será interpretado como endereço ou literal | Endereço ou valor de 5 bits |
+
+## Flags afetadas:
+Nenhuma.
+
+
 # JRxx (Jump Relative) 
 ## Descrição
 Pula somando o parâmetro ao valor do PC se uma condição verificada no registrador de estados é verdadeira.
-## formato Assembly:
+## Formato Assembly:
 `JRxx ADDR`, onde `xx` é o tipo de condição e `ADDR` é o offset para fazer o pulo relativo (substitui os bits menos significativos do program counter), ou uma label definida como `<nome da label>:` que indica a instrução imediatamente após o label.
-## formato de instrução:
-| opcode (14 a 11) |   xx(10 a 7) |        ADDR(6 a 0)        |
+## Formato de instrução:
+| opcode (14 a 12) |   xx(11 a 8) |        ADDR(7 a 0)        |
 |------------------|:------------:|:-------------------------:|
-| `1110`           |   Condição   | Offset com sinal de 7 bits|
+| `101`            |   Condição   | Offset com sinal de 8 bits|
 
 onde
 
@@ -151,12 +166,12 @@ Nenhuma.
 # JP (Jump Absolute)
 ## Descrição
 "Pula" setando o PC para o label ou endereço passado.
-## formato Assembly:
+## Formato Assembly:
 `JP ADDR`, onde `ADDR` é o endereço de 11 bits para pular incondicionalmente (substitui os bits menos significativos do program counter), ou uma label definida como `<nome da label>:` que indica a instrução imediatamente após o label.
-## formato de instrução:
-| opcode (14 a 11) |     ADDR(10 a 0)    |
+## Formato de instrução:
+| opcode (14 a 12) |     ADDR(11 a 0)    |
 |------------------|:-------------------:|
-| `1111`           | Endereço de 11 bits |
+| `110`            | Endereço de 12 bits |
 
 ## Flags afetadas
 Nenhuma.
