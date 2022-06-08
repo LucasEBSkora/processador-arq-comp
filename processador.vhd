@@ -9,8 +9,8 @@ entity processador is
     estado    : out unsigned(1 downto 0);
     PC        : out unsigned(14 downto 0);
     instrucao : out unsigned(14 downto 0);
-    reg1      : out unsigned(14 downto 0);
-    reg2      : out unsigned(14 downto 0);
+    regA      : out unsigned(14 downto 0);
+    regB      : out unsigned(14 downto 0);
     saida     : out unsigned(14 downto 0)
   );
 end entity processador;
@@ -40,12 +40,12 @@ architecture a_processador of processador is
       clk         : in  std_logic;
       rst         : in  std_logic;
       wr_en       : in  std_logic;
-      selRegWrite : in  unsigned(2 downto 0);
-      selRegA     : in  unsigned(2 downto 0);
-      selRegB     : in  unsigned(2 downto 0);
+      selRegWrite : in  unsigned(1 downto 0);
+      selReg1     : in  unsigned(1 downto 0);
+      selReg2     : in  unsigned(1 downto 0);
       writeData   : in  unsigned(14 downto 0);
-      regA        : out unsigned(14 downto 0);
-      regB        : out unsigned(14 downto 0)
+      reg1        : out unsigned(14 downto 0);
+      reg2        : out unsigned(14 downto 0)
     );
   end component bancoReg;
 
@@ -71,6 +71,17 @@ architecture a_processador of processador is
         dado     : out unsigned(14 downto 0)
     );
   end component rom;
+
+  component ram
+    port(
+    clk          : in std_logic;
+    endereco     : in unsigned(6 downto 0);
+    wr_en        : in std_logic;
+    dado_in      : in unsigned(14 downto 0);
+    dado_out     : out unsigned(14 downto 0)
+    );
+   end component;
+   
   
   -- sinais ULA
   signal entr0ULA, entr1ULA, saidaULA : unsigned(14 downto 0);
@@ -84,31 +95,43 @@ architecture a_processador of processador is
   signal V, N, Z, C                         : std_logic;
 
   -- sinais banco de registradores
-  signal regA, regB       : unsigned(14 downto 0);
-  signal selRegA, selRegB : unsigned(2 downto 0);
-  signal selRegWrite      : unsigned(2 downto 0);
+  signal reg1, reg2       : unsigned(14 downto 0);
+  signal selReg1, selReg2 : unsigned(1 downto 0);
+  signal selRegWrite      : unsigned(1 downto 0);
   signal reg_wr_en        : std_logic;
+
+  signal sel_regZero : unsigned(1 downto 0) := "00";
+  signal sel_regA    : unsigned(1 downto 0) := "01";
+  signal sel_regX    : unsigned(1 downto 0) := "10";
+  signal sel_regY    : unsigned(1 downto 0) := "11";
 
   -- sinais UC
   signal jump_en                : std_logic;
   signal saida_memoria          : unsigned(14 downto 0);
   signal endereco_jump          : unsigned(14 downto 0);
   signal reg_instrucao          : unsigned(14 downto 0);
-  signal estado_interno         : unsigned(1 downto 0);
+  signal estado_interno         : unsigned(1  downto 0);
   signal fetch, decode, execute : std_logic;
   signal endereco_instrucao     : unsigned(6 downto 0);
   signal PC_interno             : unsigned(14 downto 0);
 
+  -- sinais RAM
+  signal ram_endereco : unsigned(6 downto 0);
+  signal ram_wr_en    : std_logic;
+  signal ram_in       : unsigned(14 downto 0);
+  signal ram_out      : unsigned(14 downto 0);
+
   -- sinais de decodificação de instruções
-  signal opcode        : unsigned(14 downto 11);
+  signal opcode        : unsigned(2 downto 0);
   
   -- LD
-  signal destino_ld : unsigned(2 downto 0);
+  signal posicao_A         : std_logic;
+  signal reg_como_ponteiro : std_logic;
   
   -- ADD, SUB, LD 
   signal sel_operando_aritmetica_ou_ld    : unsigned(1 downto 0);
-  signal dado_imediato                    : unsigned(14 downto 0);
-  signal sel_registrador_aritmetica_ou_ld : unsigned(2 downto 0);
+  signal dado_imediato                    : unsigned(14 downto 0); 
+  signal sel_registrador_aritmetica_ou_ld : unsigned(1 downto 0);
   
   -- JRxx
   signal condicao_jump : unsigned(3 downto 0);
@@ -132,22 +155,20 @@ architecture a_processador of processador is
   constant condicao_JRF      : unsigned(3 downto 0) := "1111";
 
   -- constantes para acesso aos registradores
-  constant reg_Z  : unsigned(2 downto 0) := "000";
-  constant reg_A  : unsigned(2 downto 0) := "001";
-  constant reg_X  : unsigned(2 downto 0) := "010";
-  constant reg_Y  : unsigned(2 downto 0) := "011";
-  constant reg_t1 : unsigned(2 downto 0) := "100";
-  constant reg_t2 : unsigned(2 downto 0) := "101";
-  constant reg_t3 : unsigned(2 downto 0) := "110";
-  constant reg_t4 : unsigned(2 downto 0) := "111";
+  constant reg_Z  : unsigned(1 downto 0) := "00";
+  constant reg_A  : unsigned(1 downto 0) := "01";
+  constant reg_X  : unsigned(1 downto 0) := "10";
+  constant reg_Y  : unsigned(1 downto 0) := "11";
 
   -- constantes para os opcodes
-  constant opcode_nop : unsigned(3 downto 0) := "0000"; 
-  constant opcode_add : unsigned(3 downto 0) := "0001";
-  constant opcode_sub : unsigned(3 downto 0) := "0010";
-  constant opcode_ld  : unsigned(3 downto 0) := "0011";
-  constant opcode_jr  : unsigned(3 downto 0) := "1110";
-  constant opcode_jp  : unsigned(3 downto 0) := "1111";
+  constant opcode_nop : unsigned(2 downto 0) := "000"; 
+  constant opcode_add : unsigned(2 downto 0) := "001";
+  constant opcode_sub : unsigned(2 downto 0) := "010";
+  constant opcode_ld  : unsigned(2 downto 0) := "011";
+  constant opcode_mov : unsigned(2 downto 0) := "100";  -- não implementada ainda
+  constant opcode_jr  : unsigned(2 downto 0) := "101";
+  constant opcode_jp  : unsigned(2 downto 0) := "110";
+
 begin
   ula_inst: ULA port map(entr0 => entr0ULA, entr1 => entr1ULA, sel_op => sel_operacao, saida => saidaULA, 
                          V => i_V, N => i_N, Z => i_Z, C => i_C);
@@ -158,23 +179,26 @@ begin
                                 o_V => V, o_N => N, o_Z => Z, o_C => C);
 
   regs: bancoReg port map(clk => clk, rst => rst, wr_en => reg_wr_en, selRegWrite => selRegWrite, 
-                          selRegA => selRegA, selRegB => selRegB, writedata => saidaULA, regA => regA, regB => regB);  
-  
+                          selReg1 => selReg1, selReg2 => selReg2, writedata => saidaULA, reg1 => reg1, reg2 => reg2);  
+                                  
   uc_inst: UC port map (clk => clk, reset => rst, jump_en => jump_en, instrucao_in => saida_memoria, 
                         endereco_jump => endereco_jump, instrucao_out => reg_instrucao, estado => estado_interno, 
                         fetch => fetch, decode => decode, execute => execute, PC => PC_interno);
   
   rom_inst: rom port map (clk => clk, endereco => endereco_instrucao, dado => saida_memoria);
+
+  ram_inst: RAM port map(clk => clk, endereco => ram_endereco, wr_en => ram_wr_en, dado_in => ram_in, dado_out => ram_out);
                     
   -- sinais ULA
-  entr0ULA <= regA        when sel_entr0_ULA = '0' else
+  entr0ULA <= reg1        when sel_entr0_ULA = '0' else
               PC_interno  when sel_entr0_ULA = '1' else
               "000000000000000";
 
 
-  entr1ULA <= regB           when sel_entr1_ULA = "00" else
+  entr1ULA <= reg2           when sel_entr1_ULA = "00" else
               dado_imediato  when sel_entr1_ULA = "01" else
               offset_jump    when sel_entr1_ULA = "10" else
+              ram_out        when sel_entr1_ULA = "11" else
               "000000000000000";
               
   sel_operacao <= "000" when opcode = opcode_add or opcode = opcode_ld or opcode = opcode_jr else
@@ -184,10 +208,10 @@ begin
   sel_entr0_ULA <= '1' when opcode = opcode_jr else
                    '0';
 
-  sel_entr1_ULA <= "00" when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld) and
-                            sel_operando_aritmetica_ou_ld = "01" else -- ld funciona somando zero ao valor escolhido
+  sel_entr1_ULA <= "00" when opcode = opcode_ld and (((sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") and reg_como_ponteiro = '0') or posicao_A = '0') else
+                   "01" when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld) and sel_operando_aritmetica_ou_ld = "00" else 
                    "10" when opcode = opcode_jr else
-                   "01";
+                   "11";
 
   -- sinais registrador de estados
   wr_en_V <= execute when opcode = opcode_add or opcode = opcode_sub else
@@ -204,15 +228,17 @@ begin
 
   -- sinais banco de registradores
 
-  selRegA <= reg_A when (opcode = opcode_add or opcode = opcode_sub) else
-    "000"; -- LD sempre usa regA como zero
+  selReg1 <= reg_A when (opcode = opcode_add or opcode = opcode_sub) else
+             reg_Z; -- LD sempre usa reg1 como zero
     
-  selRegB <= sel_registrador_aritmetica_ou_ld;
+  selReg2 <= sel_registrador_aritmetica_ou_ld;
 
-  selRegWrite <= reg_A when (opcode = opcode_add or opcode = opcode_sub) else
-      destino_ld when (opcode = opcode_ld) else 
-       "000";
-  
+  selRegWrite <= reg_A when (opcode = opcode_add or opcode = opcode_sub) or (opcode = opcode_ld and posicao_A = '1') else
+                 reg_X when (opcode = opcode_ld and sel_operando_aritmetica_ou_ld = reg_X and posicao_A = '0' and reg_como_ponteiro = '0') else 
+                 reg_Y when (opcode = opcode_ld and sel_operando_aritmetica_ou_ld = reg_Y and posicao_A = '0' and reg_como_ponteiro = '0') else 
+                 reg_Z;
+
+  -- nem todo ld escreve em um registrador, mas se não for escrever, selRegWrite, estará apontando para o registrador Zero, que não aceita escrita.
   reg_wr_en <= '1' when execute = '1' and (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld) else 
                '0';
 
@@ -237,40 +263,54 @@ begin
               '0'                  when opcode = opcode_jr and condicao_jump = condicao_JRF      else 
               '0';
 
-  endereco_jump <= PC_interno(14 downto 11) & reg_instrucao(10 downto 0) when opcode = opcode_jp else
+  endereco_jump <= PC_interno(14 downto 12) & reg_instrucao(11 downto 0) when opcode = opcode_jp else
                    saidaULA when opcode = opcode_jr else
                    "000000000000000";
 
   endereco_instrucao <= PC_interno(6 downto 0);
 
+  -- sinais RAM
+
+  ram_endereco <= reg_instrucao(6 downto 0) when sel_operando_aritmetica_ou_ld = "01" else
+                  reg2(6 downto 0)          when reg_como_ponteiro = '1' and (sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") else
+                  "0000000";
+
+  ram_wr_en <= '1' when opcode = opcode_ld and (sel_operando_aritmetica_ou_ld = "01" or ((sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "10") and reg_como_ponteiro = '1')) and posicao_A = '0' else
+               '0';
+
+  ram_in <= saidaULA;
+
   -- sinais de decodificação de instruções
 
-  opcode <= reg_instrucao(14 downto 11);
+  opcode <= reg_instrucao(14 downto 12);
 
   -- LD
  
-  destino_ld <= reg_instrucao(8 downto 6);
+  posicao_A <= reg_instrucao(9);
+  reg_como_ponteiro <= reg_instrucao(0);
  
   -- ADD, SUB, LD 
 
-  sel_operando_aritmetica_ou_ld <= reg_instrucao (10 downto 9);
+  sel_operando_aritmetica_ou_ld <= reg_instrucao (11 downto 10);
   
-  dado_imediato <= unsigned(resize(signed(reg_instrucao(8 downto 0)), 15)) when opcode = opcode_add or opcode = opcode_sub else
-                   unsigned(resize(signed(reg_instrucao(5 downto 0)), 15)) when opcode = opcode_ld else 
+  dado_imediato <= unsigned(resize(signed(reg_instrucao(9 downto 0)), 15)) when opcode = opcode_add or opcode = opcode_sub else
+                   unsigned(resize(signed(reg_instrucao(8 downto 0)), 15)) when opcode = opcode_ld else 
                    "000000000000000";
- 
-  sel_registrador_aritmetica_ou_ld <= reg_instrucao(2 downto 0);
+  
+  -- ADD, SUB e LD só usam um registrador além do acumulador nos modos "10" e "11", que coincidem com os códigos dos registradores
+  sel_registrador_aritmetica_ou_ld <= reg_A when opcode = opcode_ld and posicao_A = '0' else
+                                      reg_instrucao(11 downto 10);
 
     
   -- JRxx
-  condicao_jump <= reg_instrucao(10 downto 7);
-  offset_jump <= unsigned(resize(signed(reg_instrucao(6 downto 0)), 15));
+  condicao_jump <= reg_instrucao(11 downto 8);
+  offset_jump <= unsigned(resize(signed(reg_instrucao(7 downto 0)), 15));
 
   -- saídas
   estado    <= estado_interno;
   PC        <= PC_interno;
   saida     <= saidaULA;
   instrucao <= reg_instrucao;
-  reg1      <= entr0ULA;
-  reg2      <= regB;
+  regA      <= reg1;
+  regB      <= reg2;
 end architecture a_processador;

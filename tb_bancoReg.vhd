@@ -11,25 +11,25 @@ architecture a_tb_bancoReg of tb_bancoReg is
       clk         : in  std_logic;
       rst         : in  std_logic;
       wr_en       : in  std_logic;
-      selRegWrite : in  unsigned(2 downto 0);
-      selRegA     : in  unsigned(2 downto 0);
-      selRegB     : in  unsigned(2 downto 0);
+      selRegWrite : in  unsigned(1 downto 0);
+      selReg1     : in  unsigned(1 downto 0);
+      selReg2     : in  unsigned(1 downto 0);
       writeData   : in  unsigned(14 downto 0);
-      regA        : out unsigned(14 downto 0);
-      regB        : out unsigned(14 downto 0)
+      reg1        : out unsigned(14 downto 0);
+      reg2        : out unsigned(14 downto 0)
     );
   end component;
 
   constant clk_period                  : time      := 100 ns;
   signal finished                      : std_logic := '0';
   signal clk, rst, wr_en               : std_logic;
-  signal selRegWrite, selRegA, selRegB : unsigned(2 downto 0);
-  signal writeData, regA, regB         : unsigned(14 downto 0);
+  signal selRegWrite, selReg1, selReg2 : unsigned(1 downto 0);
+  signal writeData, reg1, reg2         : unsigned(14 downto 0);
 
   begin
     uut: bancoReg port map(clk => clk, rst => rst, wr_en => wr_en,
-                           selRegWrite => selRegWrite, selRegA => selRegA, selRegB => selRegB,
-                           writeData => writeData, regA => regA, regB => regB);
+                           selRegWrite => selRegWrite, selReg1 => selReg1, selReg2 => selReg2,
+                           writeData => writeData, reg1 => reg1, reg2 => reg2);
     
     total_sim_time: process
     begin
@@ -60,80 +60,36 @@ architecture a_tb_bancoReg of tb_bancoReg is
     testbench: process
     begin
 
-      -- lê e escreve em dois registradores
+      -- escreve nos registradores A, X e Y
       wr_en <= '1';
-      selRegA <= "001";
-      selRegB <= "010";
-      selRegWrite <= "001";
+      selReg1 <= "01";
+      selReg2 <= "10";
+      selRegWrite <= "01";
       writeData <= "010101111001101";
       wait for clk_period*3;
       
-      selRegWrite <= "010";
+      selReg1 <= "10";
+      selReg2 <= "11";
+      selRegWrite <= "10";
       writeData <= "110111111111110";
       wait for clk_period;
 
-      -- não escreve pro registrador 0
+      selReg1 <= "11";
+      selReg2 <= "00";
+      selRegWrite <= "11";
+      writeData <= "100010001000100";
+      wait for clk_period;
+
+      -- não escreve pro registrador Zero
       writeData <= "111111111111111";
-      selRegWrite <= "000";
-      selRegA <= "000";
-      selRegB <= "000";
+      selRegWrite <= "00";
       wait for clk_period;
 
       -- não escreve sem o write enable
 
       wr_en <= '0';
-      selRegWrite <= "011";
-      selRegA <= "011";
-      selRegB <= "011";
-      wait for clk_period;
-
-      -- mas escreve nos outros 7
-      
-      wr_en <= '1';
-      
-      writeData <= "000000000000001";
-      selRegWrite <= "001";
-      selRegA <= "001";
-      selRegB <= "000";
-      wait for clk_period;
-
-      writeData <= "000000000000010";
-      selRegWrite <= "010";
-      selRegA <= "010";
-      selRegB <= "001";
-      wait for clk_period;
-
-      writeData <= "000000000000011";
-      selRegWrite <= "011";
-      selRegA <= "011";
-      selRegB <= "010";
-      wait for clk_period;
-
-      writeData <= "000000000000100";
-      selRegWrite <= "100";
-      selRegA <= "100";
-      selRegB <= "011";
-      wait for clk_period;
-
-      writeData <= "000000000000101";
-      selRegWrite <= "101";
-      selRegA <= "101";
-      selRegB <= "100";
-      wait for clk_period;
-
-      writeData <= "000000000000110";
-      selRegWrite <= "110";
-      selRegA <= "110";
-      selRegB <= "101";
-      wait for clk_period;
-
-      writeData <= "000000000000111";
-      selRegWrite <= "111";
-      selRegA <= "111";
-      selRegB <= "110";
-      wait for clk_period;
-
-      selRegB <= "111";
+      writeData <= "011101110111011";
+      selRegWrite <= "11";
       wait for clk_period;
 
       wait;

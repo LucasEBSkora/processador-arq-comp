@@ -7,12 +7,12 @@ entity bancoReg is
     clk         : in  std_logic;
     rst         : in  std_logic;
     wr_en       : in  std_logic;
-    selRegWrite : in  unsigned(2 downto 0);
-    selRegA     : in  unsigned(2 downto 0);
-    selRegB     : in  unsigned(2 downto 0);
+    selRegWrite : in  unsigned(1 downto 0);
+    selReg1     : in  unsigned(1 downto 0);
+    selReg2     : in  unsigned(1 downto 0);
     writeData   : in  unsigned(14 downto 0);
-    regA        : out unsigned(14 downto 0);
-    regB        : out unsigned(14 downto 0)
+    reg1        : out unsigned(14 downto 0);
+    reg2        : out unsigned(14 downto 0)
   );
 end entity bancoReg;
 
@@ -26,44 +26,28 @@ architecture a_bancoReg of bancoReg is
     );
   end component reg15bits;
   
-  signal wr_en_1, wr_en_2, wr_en_3, wr_en_4, wr_en_5, wr_en_6, wr_en_7 : std_logic;
-  signal data_out_1, data_out_2, data_out_3, data_out_4, data_out_5, data_out_6, data_out_7: unsigned(14 downto 0);
+  signal wr_en_A, wr_en_X, wr_en_Y          : std_logic;
+  signal data_out_A, data_out_X, data_out_Y : unsigned(14 downto 0);
 
 begin
-  reg1: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_1, data_in => writeData, data_out => data_out_1);
-  reg2: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_2, data_in => writeData, data_out => data_out_2);
-  reg3: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_3, data_in => writeData, data_out => data_out_3);
-  reg4: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_4, data_in => writeData, data_out => data_out_4);
-  reg5: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_5, data_in => writeData, data_out => data_out_5);
-  reg6: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_6, data_in => writeData, data_out => data_out_6);
-  reg7: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_7, data_in => writeData, data_out => data_out_7);
+  reg_a: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_A, data_in => writeData, data_out => data_out_A);
+  reg_x: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_X, data_in => writeData, data_out => data_out_X);
+  reg_y: reg15bits port map(clk => clk, rst => rst, wr_en => wr_en_Y, data_in => writeData, data_out => data_out_Y);
  
-  wr_en_1 <= wr_en when selRegWrite = "001" else '0';
-  wr_en_2 <= wr_en when selRegWrite = "010" else '0';
-  wr_en_3 <= wr_en when selRegWrite = "011" else '0';
-  wr_en_4 <= wr_en when selRegWrite = "100" else '0';
-  wr_en_5 <= wr_en when selRegWrite = "101" else '0';
-  wr_en_6 <= wr_en when selRegWrite = "110" else '0';
-  wr_en_7 <= wr_en when selRegWrite = "111" else '0';
+  wr_en_A <= wr_en when selRegWrite = "01" else '0';
+  wr_en_X <= wr_en when selRegWrite = "10" else '0';
+  wr_en_Y <= wr_en when selRegWrite = "11" else '0';
 
-  regA <= 
-    data_out_1 when selRegA = "001" else 
-    data_out_2 when selRegA = "010" else 
-    data_out_3 when selRegA = "011" else 
-    data_out_4 when selRegA = "100" else 
-    data_out_5 when selRegA = "101" else 
-    data_out_6 when selRegA = "110" else 
-    data_out_7 when selRegA = "111" else 
+    reg1 <= 
+    data_out_A when selReg1 = "01" else 
+    data_out_X when selReg1 = "10" else 
+    data_out_Y when selReg1 = "11" else 
     "000000000000000";
 
-  regB <= 
-    data_out_1 when selRegB = "001" else 
-    data_out_2 when selRegB = "010" else 
-    data_out_3 when selRegB = "011" else 
-    data_out_4 when selRegB = "100" else 
-    data_out_5 when selRegB = "101" else 
-    data_out_6 when selRegB = "110" else 
-    data_out_7 when selRegB = "111" else 
+  reg2 <= 
+    data_out_A when selReg2 = "01" else 
+    data_out_X when selReg2 = "10" else 
+    data_out_Y when selReg2 = "11" else 
     "000000000000000";
 
 end architecture a_bancoReg;

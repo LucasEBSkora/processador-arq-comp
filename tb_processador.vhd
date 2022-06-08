@@ -14,8 +14,8 @@ architecture a_tb_processador of tb_processador is
       estado    : out unsigned(1 downto 0);
       PC        : out unsigned(14 downto 0);
       instrucao : out unsigned(14 downto 0);
-      reg1      : out unsigned(14 downto 0);
-      reg2      : out unsigned(14 downto 0);
+      regA      : out unsigned(14 downto 0);
+      regB      : out unsigned(14 downto 0);
       saida     : out unsigned(14 downto 0)
     );
   end component processador;
@@ -27,12 +27,12 @@ architecture a_tb_processador of tb_processador is
   signal estado       : unsigned(1 downto 0);
   signal PC           : unsigned(14 downto 0);
   signal instrucao : unsigned(14 downto 0);
-  signal reg1         : unsigned(14 downto 0);
-  signal reg2         : unsigned(14 downto 0);
+  signal regA         : unsigned(14 downto 0);
+  signal regB         : unsigned(14 downto 0);
   signal saida        : unsigned(14 downto 0);
 
   begin
-    uut: processador port map(clk => clk, rst => rst, estado => estado, PC => PC, instrucao => instrucao, reg1 => reg1, reg2 => reg2, saida => saida);
+    uut: processador port map(clk => clk, rst => rst, estado => estado, PC => PC, instrucao => instrucao, regA => regA, regB => regB, saida => saida);
     
     total_sim_time:
     process

@@ -31,7 +31,7 @@ Nenhuma.
   * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM (ainda não implementado)
   * Soma indireta: `ADD A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
-| opcode (14 a 12) |   SEL (11 a 10) | DADO                   |
+| opcode (14 a 12) |   SEL (11 a 10) | DADO (9 a 0)           |
 |------------------|:---------------:|------------------------|
 | `001`            | Seleciona fonte | De onde retirar o dado |
 
@@ -59,9 +59,9 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
   * Soma com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM (ainda não implementado)
   * Soma indireta: `SUB A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
-| opcode (14 a 12) |   SEL (11 a 10) | DADO                   |
+| opcode (14 a 12) |   SEL (11 a 10) | DADO (9 a 0)           |
 |------------------|:---------------:|------------------------|
-| `001`            | Seleciona fonte | De onde retirar o dado |
+| `010`            | Seleciona fonte | De onde retirar o dado |
 
 onde:
 
@@ -92,7 +92,7 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
   * acumulador para memória: `LD $ENDEREÇO, A`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
   * acumulador para memória por ponteiro: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
 ## Formato de instrução
-| opcode (14 a 12) |       SEL (11 a 10)                | POSICAO (9)                            | FONTE (8 a 0)              |
+| opcode (14 a 12) |       SEL (11 a 10)                | POSICAO (9)                            | DADO (8 a 0)               |
 |------------------|:----------------------------------:|----------------------------------------|----------------------------|
 | `011`            | Seleciona tipo do segundo operador | `0` se A é a fonte, `1` se é o destino | De onde o valor é retirado |
 
@@ -102,8 +102,10 @@ onde:
 |------------------------------------------------------------|:----:|---------------------------------------------|
 | Retira dado da instrução                                   | `00` | Número com sinal de 9 bits                  |
 | Retira dado do endereço indicado                           | `01` | endereço de 9 bits                          |
-| Retira dado do endereço indicado pelo registrador X        | `10` |                  don't care                 |
-| Retira dado do endereço indicado pelo registrador Y        | `11` |                  don't care                 |
+| Retira dado do  registrador X                              | `10` |                  `0` se o registrador é usado como valor, `1` se como endereço                 |
+| Retira dado do  registrador Y                              | `11` |                  `0` se o registrador é usado como valor, `1` se como endereço                 |
+
+Obviamente, POSICAO = `0` e SEL = `00` não funciona.
 
 ## Flags afetadas:
 Sendo R14-0 os bits escritos no destino:
