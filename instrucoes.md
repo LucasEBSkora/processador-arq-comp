@@ -27,12 +27,11 @@ Nenhuma.
 ## Descrição
   Soma um valor ao registrador acumulador A e armazena no acumulador. Pode somar valores imediatos, registradores ou memória.
 ## Formato Assembly
-  * Soma com imediato: `ADD A,#$VALOR`, onde VALOR é um número com sinal de 9 bits
-  * Soma com registrador: `ADD A,REGISTRADOR`, onde REGISTRADOR é o nome ou número de um dos registradores
-  * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 9 bits selecionando um endereço de RAM (ainda não implementado)
-  * Soma indireta: `ADD A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y ou seus números associados, sendo usado como ponteiro
+  * Soma com imediato: `ADD A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
+  * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM (ainda não implementado)
+  * Soma indireta: `ADD A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
-| opcode (14 a 12) |   SEL (10 a 9)  | DADO                   |
+| opcode (14 a 12) |   SEL (11 a 10) | DADO                   |
 |------------------|:---------------:|------------------------|
 | `001`            | Seleciona fonte | De onde retirar o dado |
 
@@ -40,10 +39,10 @@ onde:
 
 | Descrição                                                  |  SEL | DADO                                        |
 |------------------------------------------------------------|:----:|---------------------------------------------|
-| Retira dado da instrução                                   | `00` | Número com sinal de 9 bits                  |
-| Retira dado do registrador indicado                        | `01` | valor de 3 bits selecionando um registrador |
-| Retira dado do endereço indicado (não implementado)        | `10` | Endereço de 9 bits indicando posição na RAM |
-| Retira dado do local apontado por um registrador de índice | `11` | '0' para o registrador X, '1' para o Y      |
+| Retira dado da instrução                                   | `00` | Número com sinal de 10 bits                 |
+| Retira dado do endereço indicado                           | `01` | endereço de 10 bits                         |
+| Retira dado do endereço indicado pelo registrador X        | `10` |                  don't care                 |
+| Retira dado do endereço indicado pelo registrador Y        | `11` |                  don't care                 |
 
 ## Flags afetadas:
 Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
@@ -56,14 +55,23 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
 ## Descrição
   subtrai um valor do registrador acumulador A e armazena o resultado acumulador. Pode subtrair valores imediatos, registradores ou memória.
 ## Formato Assembly
-  * Subtração com imediato: `SUB A,#$VALOR`, onde VALOR é um número com sinal de 9 bits
-  * Subtração com registrador: `SUB A,REGISTRADOR`, onde REGISTRADOR é o nome ou número do registrador.
-  * Subtração com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 9 bits selecionando um endereço de RAM (ainda não implementado)
-  * Subtração indireta: `SUB A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y ou seus números associados, sendo usado como ponteiro
+  * Soma com imediato: `SUB A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
+  * Soma com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM (ainda não implementado)
+  * Soma indireta: `SUB A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
-| opcode (14 a 12) |   SEL (10 a 9)  | DADO                   |
+| opcode (14 a 12) |   SEL (11 a 10) | DADO                   |
 |------------------|:---------------:|------------------------|
-| `010`            | Seleciona fonte | De onde retirar o dado |
+| `001`            | Seleciona fonte | De onde retirar o dado |
+
+onde:
+
+| Descrição                                                  |  SEL | DADO                                        |
+|------------------------------------------------------------|:----:|---------------------------------------------|
+| Retira dado da instrução                                   | `00` | Número com sinal de 10 bits                 |
+| Retira dado do endereço indicado                           | `01` | endereço de 10 bits                         |
+| Retira dado do endereço indicado pelo registrador X        | `10` |                  don't care                 |
+| Retira dado do endereço indicado pelo registrador Y        | `11` |                  don't care                 |
+
 
 ## Flags afetadas:
 Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
@@ -72,37 +80,30 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
   * Z : `R = 0`
   * C : `!A14*M14 + !A14*R14 + A14.M14.R14`
 
-onde
+# LD
+## Descrição
+  Carrega o registrador A com  o valor do registrador X ou Y, um valor imediato, ou um endereço da RAM; ou o registrador X, o registrador Y, ou um endereço da RAM com o valor do registrador A.
+## Formato Assembly
+  * registrador para acumulador: `LD A,(FONTE)`, onde FONTE é X ou Y.
+  * imediato para acumulador: `LD A,#VALOR`, onde VALOR é um número com sinal de 6 bits.
+  * memória para acumulador: `LD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
+  * memória por ponteiro para acumulador: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
+  * acumulador para registrador: `LD (DESTINO), A`, onde DESTINO é X ou Y.
+  * acumulador para memória: `LD $ENDEREÇO, A`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
+  * acumulador para memória por ponteiro: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
+## Formato de instrução
+| opcode (14 a 12) |       SEL (11 a 10)                | POSICAO (9)                            | FONTE (8 a 0)              |
+|------------------|:----------------------------------:|----------------------------------------|----------------------------|
+| `011`            | Seleciona tipo do segundo operador | `0` se A é a fonte, `1` se é o destino | De onde o valor é retirado |
+
+onde:
 
 | Descrição                                                  |  SEL | DADO                                        |
 |------------------------------------------------------------|:----:|---------------------------------------------|
 | Retira dado da instrução                                   | `00` | Número com sinal de 9 bits                  |
-| Retira dado do registrador indicado                        | `01` | valor de 3 bits selecionando um registrador |
-| Retira dado do endereço indicado (não implementado)        | `10` | Endereço de 9 bits indicando posição na RAM |
-| Retira dado do local apontado por um registrador de índice | `11` | '0' para o registrador X, '1' para o Y      |
-
-# LD
-## Descrição
-  Carrega um registrador com o valor de outro registrador, um valor imediato ou da memória.
-## Formato Assembly
-  * Registrador para registrador: `LD (DESTINO),(FONTE)`, onde DESTINO e FONTE são nomes ou números de registradores.
-  * imediato para registrador: `LD (DESTINO),#VALOR`, onde VALOR é um número com sinal de 6 bits
-  * memória para registrador: `LD (DESTINO),$ENDEREÇO`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM (ainda não implementado).
-  * memória por ponteiro para registrador: `LD (DESTINO),(REGISTRADOR)`, onde REGISTRADOR é X ou Y ou seus números associados, sendo usado como ponteiro
-## Formato de instrução
-| opcode (14 a 12) |       SEL (10 a 9)      | DESTINO (8 a 6)                                | FONTE (5 a 0)              |
-|------------------|:-----------------------:|------------------------------------------------|----------------------------|
-| `011`            | Seleciona tipo da fonte | Número de 3 bits identificando um registrador  | De onde o valor é retirado |
-
-onde
-
-| Descrição                                                  |  SEL | FONTE                                       |
-|------------------------------------------------------------|:----:|---------------------------------------------|
-| Retira dado da instrução                                   | `00` | Número com sinal de 9 bits                  |
-| Retira dado do registrador indicado                        | `01` | valor de 3 bits selecionando um registrador |
-| Retira dado do endereço indicado (não implementado)        | `10` | Endereço de 9 bits indicando posição na RAM |
-| Retira dado do local apontado por um registrador de índice | `11` | '0' para o registrador X, '1' para o Y      |
-
+| Retira dado do endereço indicado                           | `01` | endereço de 9 bits                          |
+| Retira dado do endereço indicado pelo registrador X        | `10` |                  don't care                 |
+| Retira dado do endereço indicado pelo registrador Y        | `11` |                  don't care                 |
 
 ## Flags afetadas:
 Sendo R14-0 os bits escritos no destino:
