@@ -28,7 +28,7 @@ Nenhuma.
   Soma um valor ao registrador acumulador A e armazena no acumulador. Pode somar valores imediatos, registradores ou memória.
 ## Formato Assembly
   * Soma com imediato: `ADD A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
-  * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM (ainda não implementado)
+  * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM 
   * Soma indireta: `ADD A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
 | opcode (14 a 12) |   SEL (11 a 10) | DADO (9 a 0)           |
@@ -56,7 +56,7 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
   subtrai um valor do registrador acumulador A e armazena o resultado acumulador. Pode subtrair valores imediatos, registradores ou memória.
 ## Formato Assembly
   * Soma com imediato: `SUB A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
-  * Soma com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM (ainda não implementado)
+  * Soma com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM
   * Soma indireta: `SUB A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
 | opcode (14 a 12) |   SEL (11 a 10) | DADO (9 a 0)           |
@@ -115,14 +115,13 @@ As flags C e V não são alteradas.
 
 # MOV
 ## Descrição
-  Carrega um endereço na RAM com o valor de outro endereço ou um valor imediato.
+  Carrega um endereço na RAM com um valor imediato.
 ## Formato Assembly
-  * imediato para memória: `MOV $DESTINO, #$FONTE`, onde `DESTINO` é um endereço e `FONTE` um valor imediato
-  * Memória para memória: `MOV $DESTINO, $FONTE`, onde `DESTINO` e `FONTE` são endereços 
+  * imediato para memória: `MOV $DESTINO, #$FONTE`, onde `DESTINO` é um endereço e `FONTE` um valor imediato sem sinal
 ## Formato  de instrução:
-| opcode (14 a 12) | DESTINO(11 a 6)    | SEL (5)                                                         | FONTE(4 a 0)                |
-|------------------|--------------------|-----------------------------------------------------------------|-----------------------------|
-| `100`            | Endereço de 6 bits | Seleciona se o valor será interpretado como endereço ou literal | Endereço ou valor de 5 bits |
+| opcode (14 a 12) | DESTINO(11 a 6)    | FONTE(5 a 0)                |
+|------------------|--------------------|-----------------------------|
+| `100`            | Endereço de 6 bits | valor de 6 bits             |
 
 ## Flags afetadas:
 Nenhuma.
@@ -148,7 +147,7 @@ onde
 | Verifica se não houve Carry                                                    | `0011` | JRNC      | `C = 0`                            |
 | Verifica se os operandos eram diferentes                                       | `0100` | JRNE      | `Z = 0`                            |
 | Verifica se não houve overflow                                                 | `0101` | JRNV      | `V = 0`                            |
-| Verifica se o resultado era estritamente positivo                              | `0110` | JRPL      | `Z = 0 AND N = 0`                  |
+| Verifica se o resultado era não positivo                                       | `0110` | JRPL      | `N = 0`                            |
 | Verifica se o operando da esquerda era maior ou igual ao da direita, com sinal | `0111` | JRSGE     | `(N XOR V) = 0`                    |
 | Verifica se o operando da esquerda era maior que o da direita, com sinal       | `1000` | JRSGT     | `Z OR (N XOR V)) = 0`              |
 | Verifica se o operando da esquerda era menor ou igual ao da direita, com sinal | `1001` | JRSLE     | `(Z OR (N XOR V)) = 1`             |
@@ -158,10 +157,10 @@ onde
 | Verifica se o operando da esquerda era menor ou igual ao da direita, sem sinal | `1100` | JRULE     | `C = 1 OR Z = 1`                   |
 | Verifica se o operando da esquerda era menor que o da direita, sem sinal       | `0000` | JRULT     | `C = 1`                            |
 | Verifica se houve overflow                                                     | `1101` | JRV       | `V = 1`                            |
-| Verifica se o resultado é não-negativo                                         | `1110` | JRNMI     | `N = 0`                            |
+| Sempre pula                                                                    | `1110` | JRT       | true                               |
 | Nunca pula                                                                     | `1111` | JRF       |  false                             |
 
-OBS: As operações de comparação (JREQ, JRNE, JRSGE, JRSGT, JRSLE, JRSLT, JRUGE, JRUGT, JRULE, JRULT) só mantém seu comportamento "semântico" se a última operação foi uma subtração entre os valores que se desejava comparar. A operação JRNMI não existe na arquitetura STM8, e foi implementada pois havia um índice sobrando, e a operação JRPL, nessa arquitetura, teria o comportamento da JRNMI.
+OBS: As operações de comparação (JREQ, JRNE, JRSGE, JRSGT, JRSLE, JRSLT, JRUGE, JRUGT, JRULE, JRULT) só mantém seu comportamento "semântico" se a última operação foi uma subtração (ou comparação) entre os valores que se desejava comparar.
 
 ## Flags afetadas
 Nenhuma.
@@ -178,3 +177,33 @@ Nenhuma.
 
 ## Flags afetadas
 Nenhuma.
+
+
+# CP
+## Descrição
+  Compara um valor com o valor armazenado no registrador acumulador A sem alterar o acumulador. Pode comparar com valores imediatos, registradores ou memória. Efetivamente, subtrai o valor de A.
+## Formato Assembly
+  * Soma com imediato: `CP A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
+  * Soma com memória: `CP A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM
+  * Soma indireta: `CP A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
+## Formato de instrução
+| opcode (14 a 12) |   SEL (11 a 10) | DADO (9 a 0)           |
+|------------------|:---------------:|------------------------|
+| `111`            | Seleciona fonte | De onde retirar o dado |
+
+onde:
+
+| Descrição                                                  |  SEL | DADO                                        |
+|------------------------------------------------------------|:----:|---------------------------------------------|
+| Retira dado da instrução                                   | `00` | Número com sinal de 10 bits                 |
+| Retira dado do endereço indicado                           | `01` | endereço de 10 bits                         |
+| Retira dado do endereço indicado pelo registrador X        | `10` |                  don't care                 |
+| Retira dado do endereço indicado pelo registrador Y        | `11` |                  don't care                 |
+
+
+## Flags afetadas:
+Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
+  * V : `(A14*M14 + A14*R14 + A14*M14*R14) XOR (A13*M13 + A13*R13 + A13*M13*R13)`
+  * N : `R14`
+  * Z : `R = 0`
+  * C : `!A14*M14 + !A14*R14 + A14.M14.R14`

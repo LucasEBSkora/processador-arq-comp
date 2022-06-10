@@ -151,7 +151,7 @@ architecture a_processador of processador is
   constant condicao_JRUGT    : unsigned(3 downto 0) := "1011";
   constant condicao_JRULE    : unsigned(3 downto 0) := "1100";
   constant condicao_JRV      : unsigned(3 downto 0) := "1101";
-  constant condicao_JRNMI    : unsigned(3 downto 0) := "1110";
+  constant condicao_JRT      : unsigned(3 downto 0) := "1110";
   constant condicao_JRF      : unsigned(3 downto 0) := "1111";
 
   -- constantes para acesso aos registradores
@@ -168,6 +168,7 @@ architecture a_processador of processador is
   constant opcode_mov : unsigned(2 downto 0) := "100";  -- não implementada ainda
   constant opcode_jr  : unsigned(2 downto 0) := "101";
   constant opcode_jp  : unsigned(2 downto 0) := "110";
+  constant opcode_cp  : unsigned(2 downto 0) := "111";
 
 begin
   ula_inst: ULA port map(entr0 => entr0ULA, entr1 => entr1ULA, sel_op => sel_operacao, saida => saidaULA, 
@@ -202,33 +203,33 @@ begin
               "000000000000000";
               
   sel_operacao <= "000" when opcode = opcode_add or opcode = opcode_ld or opcode = opcode_jr else
-                  "001" when opcode = opcode_sub else
+                  "001" when opcode = opcode_sub or opcode = opcode_cp else
                   "000";
 
   sel_entr0_ULA <= '1' when opcode = opcode_jr else
                    '0';
 
   sel_entr1_ULA <= "00" when opcode = opcode_ld and (((sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") and reg_como_ponteiro = '0') or posicao_A = '0') else
-                   "01" when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld) and sel_operando_aritmetica_ou_ld = "00" else 
+                   "01" when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp or opcode = opcode_ld) and sel_operando_aritmetica_ou_ld = "00" else 
                    "10" when opcode = opcode_jr else
                    "11";
 
   -- sinais registrador de estados
-  wr_en_V <= execute when opcode = opcode_add or opcode = opcode_sub else
+  wr_en_V <= execute when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp else
              '0';
 
-  wr_en_N <= execute when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld else
+  wr_en_N <= execute when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp or opcode = opcode_ld else
              '0';
 
-  wr_en_Z <= execute when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_ld else
+  wr_en_Z <= execute when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp or opcode = opcode_ld else
              '0';
              
-  wr_en_C <= execute when opcode = opcode_add or opcode = opcode_sub else
+  wr_en_C <= execute when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp else
              '0';
 
   -- sinais banco de registradores
 
-  selReg1 <= reg_A when (opcode = opcode_add or opcode = opcode_sub) else
+  selReg1 <= reg_A when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp) else
              reg_Z; -- LD sempre usa reg1 como zero
     
   selReg2 <= sel_registrador_aritmetica_ou_ld;
@@ -251,7 +252,7 @@ begin
               not C                when opcode = opcode_jr and condicao_jump = condicao_JRNC_UGE else 
               not Z                when opcode = opcode_jr and condicao_jump = condicao_JRNE     else 
               not V                when opcode = opcode_jr and condicao_jump = condicao_JRNV     else 
-              (not Z) and (not N)  when opcode = opcode_jr and condicao_jump = condicao_JRPL     else 
+              not N                when opcode = opcode_jr and condicao_jump = condicao_JRPL     else 
               not (N xor V)        when opcode = opcode_jr and condicao_jump = condicao_JRSGE    else 
               not (Z or (N xor V)) when opcode = opcode_jr and condicao_jump = condicao_JRSGT    else 
               Z or (N xor V)       when opcode = opcode_jr and condicao_jump = condicao_JRSLE    else 
@@ -259,7 +260,7 @@ begin
               (not C) and (not Z)  when opcode = opcode_jr and condicao_jump = condicao_JRUGT    else 
               C and Z              when opcode = opcode_jr and condicao_jump = condicao_JRULE    else 
               V                    when opcode = opcode_jr and condicao_jump = condicao_JRV      else 
-              not N                when opcode = opcode_jr and condicao_jump = condicao_JRNMI    else 
+              '1'                  when opcode = opcode_jr and condicao_jump = condicao_JRT      else 
               '0'                  when opcode = opcode_jr and condicao_jump = condicao_JRF      else 
               '0';
 
@@ -293,7 +294,7 @@ begin
 
   sel_operando_aritmetica_ou_ld <= reg_instrucao (11 downto 10);
   
-  dado_imediato <= unsigned(resize(signed(reg_instrucao(9 downto 0)), 15)) when opcode = opcode_add or opcode = opcode_sub else
+  dado_imediato <= unsigned(resize(signed(reg_instrucao(9 downto 0)), 15)) when opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp else
                    unsigned(resize(signed(reg_instrucao(8 downto 0)), 15)) when opcode = opcode_ld else 
                    "000000000000000";
   
