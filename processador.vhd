@@ -86,7 +86,7 @@ architecture a_processador of processador is
   -- sinais ULA
   signal entr0ULA, entr1ULA, saidaULA : unsigned(14 downto 0);
   signal sel_operacao                 : unsigned(2 downto 0);
-  signal sel_entr0_ULA                : std_logic;
+  signal sel_entr0_ULA                : unsigned(1 downto 0);
   signal sel_entr1_ULA                : unsigned(1 downto 0);
   signal i_V, i_N, i_Z, i_C           : std_logic;
   
@@ -191,8 +191,8 @@ begin
   ram_inst: RAM port map(clk => clk, endereco => ram_endereco, wr_en => ram_wr_en, dado_in => ram_in, dado_out => ram_out);
                     
   -- sinais ULA
-  entr0ULA <= reg1        when sel_entr0_ULA = '0' else
-              PC_interno  when sel_entr0_ULA = '1' else
+  entr0ULA <= reg1        when sel_entr0_ULA = "00" else
+              PC_interno  when sel_entr0_ULA = "01" else
               "000000000000000";
 
 
@@ -206,8 +206,9 @@ begin
                   "001" when opcode = opcode_sub or opcode = opcode_cp else
                   "000";
 
-  sel_entr0_ULA <= '1' when opcode = opcode_jr else
-                   '0';
+  sel_entr0_ULA <= "01" when opcode = opcode_jr else
+                   "10" when opcode = opcode_ld else
+                   "00";
 
   sel_entr1_ULA <= "00" when opcode = opcode_ld and (((sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") and reg_como_ponteiro = '0') or posicao_A = '0') else
                    "01" when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp or opcode = opcode_ld) and sel_operando_aritmetica_ou_ld = "00" else 
@@ -230,7 +231,8 @@ begin
   -- sinais banco de registradores
 
   selReg1 <= reg_A when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp) else
-             reg_Z; -- LD sempre usa reg1 como zero
+             reg_instrucao(11 downto 10) when opcode = opcode_ld else
+             reg_Z;
     
   selReg2 <= sel_registrador_aritmetica_ou_ld;
 
@@ -273,7 +275,7 @@ begin
   -- sinais RAM
 
   ram_endereco <= reg_instrucao(6 downto 0) when sel_operando_aritmetica_ou_ld = "01" else
-                  reg2(6 downto 0)          when reg_como_ponteiro = '1' and (sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") else
+                  reg1(6 downto 0)          when reg_como_ponteiro = '1' and (sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") else
                   "0000000";
 
   ram_wr_en <= '1' when opcode = opcode_ld and (sel_operando_aritmetica_ou_ld = "01" or ((sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") and reg_como_ponteiro = '1')) and posicao_A = '0' else

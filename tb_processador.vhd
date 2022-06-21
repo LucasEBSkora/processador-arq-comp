@@ -37,7 +37,7 @@ architecture a_tb_processador of tb_processador is
     total_sim_time:
     process
     begin
-      wait for 100 us;
+      wait for 1 ms;
       finished <= '1';
       wait;
     end process total_sim_time;
