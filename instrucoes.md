@@ -1,15 +1,14 @@
-Todas instruções tem exatamente 15 bits. Temos 8 registradores:
+Todas instruções tem exatamente 15 bits. Temos 4 registradores:
   * Z: registrador carregado sempre com constante 0;
   * A: Acumulador, único capaz de operações de soma e subtração;
   * X e Y: Registradores de índice, acessam memória 
-  * t0 a t3: Registradores de "uso geral"
   * Embora não seja acessível exceto pela instrução JRxx, há um registrador de estados que guarda informações sobre a última operação. As flags guardadas são:
     * Overflow(V): houve overflow na última operação aritmética com sinal;
     * Negative(N): a última operação - mesmo se de movimentação de dados apenas - teve resultado negativo;
     * Zero(Z): a última operação - mesmo se de movimentação de dados apenas - teve resultado zero;
     * Carry(C): A última operação aritmética gerou carry
 
-Como discutido com o professor, como as instruções do STM8 possuem muitos modos de endereçamento, a maior parte dos quais acessa memória RAM (que ainda não temos), e tem pouquíssimos registradores, a maior parte das instruções foi implementada parcialmente (sem o acesso a memória) ou com alterações (possibilitando usar os registradores t0 a t3, por exemplo). A pasta "instrucoes" contém prints do datasheet do processador-base, com setas vermelhas indicando grosso modo as formas de usar as instruções que foram implementadas.
+Como discutido com o professor, as instruções do STM8 possuem muitos modos de endereçamento. Por isso, as instruções usadas foram implementadas apenas parcialmente, com alguns modos de endereçamento. A pasta "instrucoes" contém prints do datasheet do processador-base, com setas vermelhas indicando grosso modo as opções e modos de endereçamento implementados para cada instrução.
 
 # NOP
 ## Descrição
@@ -25,7 +24,7 @@ Nenhuma.
 
 # ADD
 ## Descrição
-  Soma um valor ao registrador acumulador A e armazena no acumulador. Pode somar valores imediatos, registradores ou memória.
+  Soma um valor ao registrador acumulador A e armazena o resultado no acumulador. Pode somar valores imediatos ou memória com endereço fixo ou por ponteiro.
 ## Formato Assembly
   * Soma com imediato: `ADD A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
   * Soma com memória: `ADD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM 
@@ -53,7 +52,7 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
 
 # SUB
 ## Descrição
-  subtrai um valor do registrador acumulador A e armazena o resultado acumulador. Pode subtrair valores imediatos, registradores ou memória.
+  subtrai um valor do registrador acumulador A e armazena o resultado no acumulador. Pode somar valores imediatos ou memória com endereço fixo ou por ponteiro.
 ## Formato Assembly
   * Soma com imediato: `SUB A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
   * Soma com memória: `SUB A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM
@@ -82,15 +81,15 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
 
 # LD
 ## Descrição
-  Carrega o registrador A com  o valor do registrador X ou Y, um valor imediato, ou um endereço da RAM; ou o registrador X, o registrador Y, ou um endereço da RAM com o valor do registrador A.
+  Carrega o registrador A com o valor do registrador X ou Y, um valor imediato, ou um valor na memória (endereçado de forma fixa ou por ponteiro);
 ## Formato Assembly
-  * registrador para acumulador: `LD A,(FONTE)`, onde FONTE é X ou Y.
-  * imediato para acumulador: `LD A,#VALOR`, onde VALOR é um número com sinal de 6 bits.
-  * memória para acumulador: `LD A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
-  * memória por ponteiro para acumulador: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
-  * acumulador para registrador: `LD (DESTINO), A`, onde DESTINO é X ou Y.
-  * acumulador para memória: `LD $ENDEREÇO, A`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
-  * acumulador para memória por ponteiro: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
+  * Memória por ponteiro para acumulador: `LD A,(FONTE)`, onde FONTE é X ou Y.
+  * Imediato para acumulador: `LD A,#$VALOR`, onde VALOR é um número com sinal de 6 bits.
+  * Memória para acumulador: `LD A,$ENDEREÇO`, onde ENDEREÇO é um endereço sem sinal de até 6 bits.
+  * Ponteiro para acumulador: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
+  * Acumulador para memória por ponteiro: `LD (DESTINO), A`, onde DESTINO é X ou Y.
+  * Acumulador para memória: `LD $ENDEREÇO, A`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
+  * Acumulador para registrador: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
 ## Formato de instrução
 | opcode (14 a 12) |       SEL (11 a 10)                | POSICAO (9)                            | DADO (8 a 0)               |
 |------------------|:----------------------------------:|----------------------------------------|----------------------------|
@@ -98,14 +97,14 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
 
 onde:
 
-| Descrição                                                  |  SEL | DADO                                        |
-|------------------------------------------------------------|:----:|---------------------------------------------|
-| Retira dado da instrução                                   | `00` | Número com sinal de 9 bits                  |
-| Retira dado do endereço indicado                           | `01` | endereço de 9 bits                          |
-| Retira dado do  registrador X                              | `10` |                  `0` se o registrador é usado como valor, `1` se como endereço                 |
-| Retira dado do  registrador Y                              | `11` |                  `0` se o registrador é usado como valor, `1` se como endereço                 |
+| Descrição                                                  |  SEL | DADO                                                                          |
+|------------------------------------------------------------|:----:|-------------------------------------------------------------------------------|
+| Retira dado da instrução                                   | `00` | Número com sinal de 9 bits                                                    |
+| Retira dado do endereço indicado                           | `01` | endereço de 9 bits                                                            |
+| Retira dado do registrador X                               | `10` | `0` se o registrador é usado como valor, `1` se como endereço                 |
+| Retira dado do registrador Y                               | `11` | `0` se o registrador é usado como valor, `1` se como endereço                 |
 
-Obviamente, POSICAO = `0` e SEL = `00` não funciona.
+A combinação POSICAO = `0` e SEL = `00` não tem efeito.
 
 ## Flags afetadas:
 Sendo R14-0 os bits escritos no destino:
@@ -113,27 +112,13 @@ Sendo R14-0 os bits escritos no destino:
   * Z : `R = 0`
 As flags C e V não são alteradas.
 
-# MOV
-## Descrição
-  Carrega um endereço na RAM com um valor imediato.
-## Formato Assembly
-  * imediato para memória: `MOV $DESTINO, #$FONTE`, onde `DESTINO` é um endereço e `FONTE` um valor imediato sem sinal
-## Formato  de instrução:
-| opcode (14 a 12) | DESTINO(11 a 6)    | FONTE(5 a 0)                |
-|------------------|--------------------|-----------------------------|
-| `100`            | Endereço de 6 bits | valor de 6 bits             |
-
-## Flags afetadas:
-Nenhuma.
-
-
 # JRxx (Jump Relative) 
 ## Descrição
 Pula somando o parâmetro ao valor do PC se uma condição verificada no registrador de estados é verdadeira.
 ## Formato Assembly:
-`JRxx ADDR`, onde `xx` é o tipo de condição e `ADDR` é o offset para fazer o pulo relativo (substitui os bits menos significativos do program counter), ou uma label definida como `<nome da label>:` que indica a instrução imediatamente após o label.
+`JRxx OFFSET`, onde `xx` é o tipo de condição e `OFFSET` é o offset para fazer o pulo relativo;
 ## Formato de instrução:
-| opcode (14 a 12) |   xx(11 a 8) |        ADDR(7 a 0)        |
+| opcode (14 a 12) |   xx(11 a 8) |        OFFSET(7 a 0)      |
 |------------------|:------------:|:-------------------------:|
 | `101`            |   Condição   | Offset com sinal de 8 bits|
 
@@ -160,16 +145,16 @@ onde
 | Sempre pula                                                                    | `1110` | JRT       | true                               |
 | Nunca pula                                                                     | `1111` | JRF       |  false                             |
 
-OBS: As operações de comparação (JREQ, JRNE, JRSGE, JRSGT, JRSLE, JRSLT, JRUGE, JRUGT, JRULE, JRULT) só mantém seu comportamento "semântico" se a última operação foi uma subtração (ou comparação) entre os valores que se desejava comparar.
+OBS: As operações de comparação (JREQ, JRNE, JRSGE, JRSGT, JRSLE, JRSLT, JRUGE, JRUGT, JRULE, JRULT) só mantém seu comportamento "semântico" se a última operação foi uma subtração (SUB) ou comparação (ADD) entre os valores que se desejava comparar.
 
 ## Flags afetadas
 Nenhuma.
 
 # JP (Jump Absolute)
 ## Descrição
-"Pula" setando o PC para o label ou endereço passado.
+"Pula" setando o PC para o endereço passado.
 ## Formato Assembly:
-`JP ADDR`, onde `ADDR` é o endereço de 11 bits para pular incondicionalmente (substitui os bits menos significativos do program counter), ou uma label definida como `<nome da label>:` que indica a instrução imediatamente após o label.
+`JP ADDR`, onde `ADDR` é o endereço de 11 bits para pular incondicionalmente (substitui os bits menos significativos do program counter)
 ## Formato de instrução:
 | opcode (14 a 12) |     ADDR(11 a 0)    |
 |------------------|:-------------------:|
@@ -181,11 +166,11 @@ Nenhuma.
 
 # CP
 ## Descrição
-  Compara um valor com o valor armazenado no registrador acumulador A sem alterar o acumulador. Pode comparar com valores imediatos, registradores ou memória. Efetivamente, subtrai o valor de A.
+  Compara um valor com o valor armazenado no registrador acumulador A sem alterar o acumulador. Pode comparar com valores imediatos ou memória (por endereço constante ou ponteiro). Efetivamente, subtrai o valor de A sem alterá-lo.
 ## Formato Assembly
-  * Soma com imediato: `CP A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
-  * Soma com memória: `CP A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM
-  * Soma indireta: `CP A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
+  * Comparação com imediato: `CP A,#$VALOR`, onde VALOR é um número com sinal de 10 bits
+  * Comparação com memória: `CP A,$ENDEREÇO`, onde ENDEREÇO é um valor de até 10 bits selecionando um endereço de RAM
+  * Comparação indireta: `CP A,(REGISTRADOR)`, onde REGISTRADOR é X ou Y
 ## Formato de instrução
 | opcode (14 a 12) |   SEL (11 a 10) | DADO (9 a 0)           |
 |------------------|:---------------:|------------------------|
@@ -202,7 +187,7 @@ onde:
 
 
 ## Flags afetadas:
-Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 os bits do resultado:
+Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, e R14-0 os bits do resultado:
   * V : `(A14*M14 + A14*R14 + A14*M14*R14) XOR (A13*M13 + A13*R13 + A13*M13*R13)`
   * N : `R14`
   * Z : `R = 0`

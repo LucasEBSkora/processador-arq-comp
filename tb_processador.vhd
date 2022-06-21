@@ -37,7 +37,7 @@ architecture a_tb_processador of tb_processador is
     total_sim_time:
     process
     begin
-      wait for 1 ms;
+      wait for 13 ms;
       finished <= '1';
       wait;
     end process total_sim_time;
@@ -50,7 +50,7 @@ architecture a_tb_processador of tb_processador is
       wait;
     end process;
 
-    clk_processadoress: process
+    clk_processadores: process
     begin
       while finished /= '1' loop
         clk <= '0';
@@ -59,7 +59,7 @@ architecture a_tb_processador of tb_processador is
         wait for clk_period/2;
       end loop;
       wait;
-    end process clk_processadoress;
+    end process clk_processadores;
 
     -- testbench deixa o processador executar o programa: não precisa de um processo para gerenciar entradas
 

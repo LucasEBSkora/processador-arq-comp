@@ -1,0 +1,30 @@
+//programa julang compilado com https://github.com/LucasEBSkora/compilador-julang
+
+declare A[32];
+A[0] = 2;
+declare currentIndex = 1;
+declare candidate = 3;
+declare comparingWith;
+declare partial;
+declare prime;
+
+while (currentIndex < 32) {
+  comparingWith = currentIndex - 1;
+  while (comparingWith >= 0) {
+    partial = candidate;
+    prime = A[comparingWith];
+    while (partial > 0) {
+      partial = partial - prime;
+    }
+    // não é primo
+    if (partial == 0) {
+      comparingWith = -1;
+    }
+    comparingWith = comparingWith - 1;
+  }
+  if (comparingWith == -1) {
+    A[currentIndex] = candidate;
+    currentIndex = currentIndex + 1;
+  }
+  candidate = candidate + 1;
+}
