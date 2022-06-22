@@ -260,7 +260,7 @@ begin
               Z or (N xor V)       when opcode = opcode_jr and condicao_jump = condicao_JRSLE    else 
               N xor V              when opcode = opcode_jr and condicao_jump = condicao_JRSLT    else 
               (not C) and (not Z)  when opcode = opcode_jr and condicao_jump = condicao_JRUGT    else 
-              C and Z              when opcode = opcode_jr and condicao_jump = condicao_JRULE    else 
+              C or Z              when opcode = opcode_jr and condicao_jump = condicao_JRULE    else 
               V                    when opcode = opcode_jr and condicao_jump = condicao_JRV      else 
               '1'                  when opcode = opcode_jr and condicao_jump = condicao_JRT      else 
               '0'                  when opcode = opcode_jr and condicao_jump = condicao_JRF      else 

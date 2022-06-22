@@ -37,17 +37,21 @@ begin
 				"000000000000000";
 	saida <= saida_interno;
 	
-	V <= ((entr0(14) and entr1(14)) or (entr1(14) and (not saida_interno(14))) or ((not saida_interno(14)) and entr0(14))) XOR ((entr0(13) and entr1(13)) or (entr1(13) and (not saida_interno(13))) or ((not saida_interno(13)) and entr0(13)))  when sel_op = op_add else
-			 ((entr0(14) and entr1(14)) or (entr0(14) and saida_interno(14)) or (entr0(14) and entr1(14) and saida_interno(14))) XOR ((entr0(13) and entr1(13)) or (entr0(13) and saida_interno(13)) or (entr0(13) and entr1(13) and saida_interno(13)))when sel_op = op_sub else
-	'0';
+	V <= '1' when sel_op = op_add and 
+							  (((entr0(14) = '1' and entr1(14) = '1') or (entr1(14) = '1' and saida_interno(14) = '0') or (saida_interno(14) = '0' and entr0(14) = '1')) 
+								XOR ((entr0(13) = '1' and entr1(13) = '1') or (entr1(13) = '1' and saida_interno(13) = '0') or (saida_interno(13) = '0' and entr0(13) = '1')))    else
+			 '1' when sel_op = op_sub and
+			 					(((entr0(14) = '1' and entr1(14) = '1') or (entr0(14) = '1' and saida_interno(14) = '1') or (entr0(14) = '1' and entr1(14) = '1' and saida_interno(14) = '1')) 
+			 					XOR ((entr0(13) = '1' and entr1(13) = '1') or (entr0(13) = '1' and saida_interno(13) = '1') or (entr0(13) = '1' and entr1(13) = '1' and saida_interno(13) = '1')))  else
+			 '0';
 	
 	N <= saida_interno(14);
 
 	Z <= 	'1' when saida_interno = "000000000000000" else
 				'0';
 				
-	C <= (entr0(14) and entr1(14)) or (entr1(14) and not saida_interno(14)) or (not saida_interno(14) and entr0(14))  when sel_op = op_add else
-		((not entr0(14)) and entr1(14)) or ((not entr0(14)) and saida_interno(14)) or (entr0(14) and entr1(14) and saida_interno(14)) when sel_op = op_sub else
+	C <= '1' when ((entr0(14) = '1' and entr1(14) = '1') or (entr1(14) = '1' and saida_interno(14) = '0') or (saida_interno(14) = '0' and entr0(14) = '1'))  and sel_op = op_add else
+			 '1' when ((entr0(14) = '0' and entr1(14) = '1') or (entr0(14) = '0' and saida_interno(14) = '1') or (entr0(14) = '1' and entr1(14) = '1' and saida_interno(14) = '1')) and sel_op = op_sub else
 			'0';
 	
 end;

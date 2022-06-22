@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed Jun 22 13:21:10 2022
+[*]
+[dumpfile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/teste_jrxx.ghw"
+[dumpfile_mtime] "Wed Jun 22 13:15:48 2022"
+[dumpfile_size] 1617006
+[savefile] "/home/lucass/OneDrive/Faculdade/Arquitetura de Computadores/processador-arq-comp/waves/teste_jrxx.gtkw"
+[timestart] 0
+[size] 1920 1011
+[pos] -457 -202
+*-30.000000 24246000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_processador.
+[sst_width] 212
+[signals_width] 118
+[sst_expanded] 1
+[sst_vpaned_height] 286
+@421
+#{top.tb_processador.pc[14:0]} top.tb_processador.pc[14] top.tb_processador.pc[13] top.tb_processador.pc[12] top.tb_processador.pc[11] top.tb_processador.pc[10] top.tb_processador.pc[9] top.tb_processador.pc[8] top.tb_processador.pc[7] top.tb_processador.pc[6] top.tb_processador.pc[5] top.tb_processador.pc[4] top.tb_processador.pc[3] top.tb_processador.pc[2] top.tb_processador.pc[1] top.tb_processador.pc[0]
+#{top.tb_processador.saida[14:0]} top.tb_processador.saida[14] top.tb_processador.saida[13] top.tb_processador.saida[12] top.tb_processador.saida[11] top.tb_processador.saida[10] top.tb_processador.saida[9] top.tb_processador.saida[8] top.tb_processador.saida[7] top.tb_processador.saida[6] top.tb_processador.saida[5] top.tb_processador.saida[4] top.tb_processador.saida[3] top.tb_processador.saida[2] top.tb_processador.saida[1] top.tb_processador.saida[0]
+@28
+top.tb_processador.uut.c
+top.tb_processador.uut.z
+top.tb_processador.uut.n
+top.tb_processador.uut.v
+[pattern_trace] 1
+[pattern_trace] 0
