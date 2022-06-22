@@ -275,7 +275,8 @@ begin
   -- sinais RAM
 
   ram_endereco <= reg_instrucao(6 downto 0) when sel_operando_aritmetica_ou_ld = "01" else
-                  reg1(6 downto 0)          when reg_como_ponteiro = '1' and (sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") else
+                  reg1(6 downto 0)          when opcode = opcode_ld and reg_como_ponteiro = '1' and (sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") else
+                  reg2(6 downto 0)          when (opcode = opcode_add or opcode = opcode_sub or opcode = opcode_cp) and (sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") else
                   "0000000";
 
   ram_wr_en <= '1' when opcode = opcode_ld and (sel_operando_aritmetica_ou_ld = "01" or ((sel_operando_aritmetica_ou_ld = "10" or sel_operando_aritmetica_ou_ld = "11") and reg_como_ponteiro = '1')) and posicao_A = '0' else

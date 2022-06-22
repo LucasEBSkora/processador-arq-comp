@@ -83,13 +83,13 @@ Sendo A14-A0 os bits do registrador A, M14-0 os bits do outro operando, E R14-0 
 ## Descrição
   Carrega o registrador A com o valor do registrador X ou Y, um valor imediato, ou um valor na memória (endereçado de forma fixa ou por ponteiro);
 ## Formato Assembly
-  * Memória por ponteiro para acumulador: `LD A,(FONTE)`, onde FONTE é X ou Y.
   * Imediato para acumulador: `LD A,#$VALOR`, onde VALOR é um número com sinal de 6 bits.
   * Memória para acumulador: `LD A,$ENDEREÇO`, onde ENDEREÇO é um endereço sem sinal de até 6 bits.
-  * Ponteiro para acumulador: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
-  * Acumulador para memória por ponteiro: `LD (DESTINO), A`, onde DESTINO é X ou Y.
   * Acumulador para memória: `LD $ENDEREÇO, A`, onde ENDEREÇO é um valor de até 6 bits selecionando um endereço de RAM.
-  * Acumulador para registrador: `LD A, (REGISTRADOR)`, onde REGISTRADOR é X ou Y.
+  * Memória por ponteiro para acumulador: `LD A,(FONTE)`, onde FONTE é X ou Y.
+  * Registrador para acumulador: `LD A, REGISTRADOR`, onde REGISTRADOR é X ou Y.
+  * Acumulador para memória por ponteiro: `LD (DESTINO), A`, onde DESTINO é X ou Y.
+  * Acumulador para registrador: `LD REGISTRADOR, A`, onde REGISTRADOR é X ou Y.
 ## Formato de instrução
 | opcode (14 a 12) |       SEL (11 a 10)                | POSICAO (9)                            | DADO (8 a 0)               |
 |------------------|:----------------------------------:|----------------------------------------|----------------------------|
@@ -132,7 +132,7 @@ onde
 | Verifica se não houve Carry                                                    | `0011` | JRNC      | `C = 0`                            |
 | Verifica se os operandos eram diferentes                                       | `0100` | JRNE      | `Z = 0`                            |
 | Verifica se não houve overflow                                                 | `0101` | JRNV      | `V = 0`                            |
-| Verifica se o resultado era não positivo                                       | `0110` | JRPL      | `N = 0`                            |
+| Verifica se o resultado era não negativo                                       | `0110` | JRPL      | `N = 0`                            |
 | Verifica se o operando da esquerda era maior ou igual ao da direita, com sinal | `0111` | JRSGE     | `(N XOR V) = 0`                    |
 | Verifica se o operando da esquerda era maior que o da direita, com sinal       | `1000` | JRSGT     | `Z OR (N XOR V)) = 0`              |
 | Verifica se o operando da esquerda era menor ou igual ao da direita, com sinal | `1001` | JRSLE     | `(Z OR (N XOR V)) = 1`             |
@@ -154,7 +154,7 @@ Nenhuma.
 ## Descrição
 "Pula" setando o PC para o endereço passado.
 ## Formato Assembly:
-`JP ADDR`, onde `ADDR` é o endereço de 11 bits para pular incondicionalmente (substitui os bits menos significativos do program counter)
+`JP ADDR`, onde `ADDR` é o endereço de 12 bits para pular incondicionalmente (substitui os bits menos significativos do program counter)
 ## Formato de instrução:
 | opcode (14 a 12) |     ADDR(11 a 0)    |
 |------------------|:-------------------:|
